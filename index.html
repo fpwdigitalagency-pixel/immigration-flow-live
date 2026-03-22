@@ -1,0 +1,1590 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>15 RDV en 7 jours · Immigration Flow Live | 4 Avril 2026</title>
+    <meta name="description" content="Le 4 avril à 18h00 : je vous montre comment une agence francophone a généré 15 rendez-vous qualifiés en 7 jours, avec 10% moins de trafic. Session live gratuite, places limitées.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+    <link href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@23/build/css/intlTelInput.css">
+
+    <style>
+        /* ============================================================
+           DESIGN TOKENS — Source: DESIGN.md (Sovereign Horizon)
+           ============================================================ */
+        :root {
+            --surface-dim:               #0f141a;
+            --surface:                   #131820;
+            --surface-container-low:     #181c23;
+            --surface-container:         #1c2027;
+            --surface-container-high:    #272b32;
+            --surface-container-highest: #31353c;
+            --surface-variant:           #31353c;
+            --outline-variant:           #41484d;
+            --primary:                   #e3f2ff;
+            --primary-container:         #a6daff;
+            --primary-fixed-dim:         #99cdf1;
+            --on-primary-fixed:          #001e2e;
+            --surface-tint:              #99cdf1;
+            --on-surface:                #dde4ec;
+            --on-surface-variant:        #8e97a3;
+
+            --font-serif: 'Instrument Serif', Georgia, serif;
+            --font-sans:  'Satoshi', system-ui, -apple-system, sans-serif;
+        }
+
+        /* ============================================================
+           RESET & BASE
+           ============================================================ */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            background-color: var(--surface-dim);
+            color: var(--on-surface);
+            font-family: var(--font-sans);
+            font-size: 1rem;
+            font-weight: 500;
+            line-height: 1.6;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ============================================================
+           NAVIGATION — Glass flottante
+           ============================================================ */
+        nav {
+            position: fixed;
+            top: 1.25rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: min(calc(100% - 2.5rem), 1100px);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.9rem 1.5rem;
+            /* État initial : intégré au hero (transparent) */
+            background: transparent;
+            border-radius: 14px;
+            border: 1px solid transparent;
+            box-shadow: none;
+            z-index: 1000;
+            transition:
+                border-color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow   0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        /* Couche glassmorphisme animée via opacity */
+        nav::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            background: rgba(28, 32, 39, 0.55);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        /* État scrollé : détachement glassmorphisme */
+        nav.is-scrolled::before {
+            opacity: 1;
+        }
+        nav.is-scrolled {
+            border-color: rgba(153, 205, 241, 0.08);
+            box-shadow: 0 1px 0 rgba(153,205,241,0.06) inset,
+                        0 24px 48px rgba(0,0,0,0.35);
+        }
+        .nav-logo {
+            font-family: var(--font-serif);
+            font-size: 1.05rem;
+            color: var(--primary);
+            letter-spacing: -0.01em;
+            position: relative;
+            z-index: 1;
+        }
+        .nav-cta {
+            /* État initial : outline ghost */
+            background: transparent;
+            color: var(--primary-container);
+            border: 1.5px solid rgba(166, 218, 255, 0.35);
+            padding: 0.55rem 1.2rem;
+            border-radius: 9999px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            text-decoration: none;
+            letter-spacing: 0.01em;
+            position: relative;
+            z-index: 1;
+            transition:
+                background    0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                color         0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                border-color  0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow    0.2s ease,
+                transform     0.2s ease;
+        }
+        /* État scrollé : CTA filled (style original) */
+        nav.is-scrolled .nav-cta {
+            background: var(--primary-container);
+            color: var(--on-primary-fixed);
+            border-color: transparent;
+        }
+        .nav-cta:hover {
+            box-shadow: 0 0 24px rgba(166, 218, 255, 0.35);
+            transform: translateY(-1px);
+        }
+
+        /* ── Mini-countdown dans la navbar ──────────────────────────── */
+        .nav-countdown {
+            display: flex;
+            align-items: center;
+            gap: 0.55rem;
+            opacity: 0;
+            transform: translateY(-5px);
+            pointer-events: none;
+            position: relative;
+            z-index: 1;
+            transition:
+                opacity   0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.08s,
+                transform 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.08s;
+        }
+        nav.is-scrolled .nav-countdown {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+        .nav-cd-unit {
+            display: flex;
+            align-items: baseline;
+            gap: 0.18rem;
+        }
+        .nav-cd-num {
+            font-family: var(--font-serif);
+            font-size: 1.05rem;
+            color: var(--primary);
+            letter-spacing: -0.02em;
+            min-width: 2ch;
+            text-align: center;
+            line-height: 1;
+        }
+        .nav-cd-lbl {
+            font-size: 0.6rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            color: var(--on-surface-variant);
+            opacity: 0.65;
+        }
+
+        /* Mobile : navbar compacte + countdown remplace le logo au scroll */
+        @media (max-width: 640px) {
+            nav {
+                top: 0.75rem;
+                padding: 0.6rem 1rem;
+            }
+            .nav-cta {
+                padding: 0.38rem 0.85rem;
+                font-size: 0.75rem;
+            }
+            /* Logo : disparaît au scroll */
+            .nav-logo {
+                transition:
+                    opacity   0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                    max-width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+                max-width: 180px;
+                overflow: hidden;
+                white-space: nowrap;
+            }
+            nav.is-scrolled .nav-logo {
+                opacity: 0;
+                max-width: 0;
+            }
+            /* Countdown : se glisse à la place du logo */
+            .nav-countdown {
+                position: absolute;
+                left: 1rem;
+                top: 0;
+                bottom: 0;
+                width: auto;
+                max-height: none;
+                overflow: visible;
+                padding-top: 0;
+                justify-content: flex-start;
+                align-items: center;
+                transform: translateY(-5px);
+                transition:
+                    opacity   0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.08s,
+                    transform 0.4s cubic-bezier(0.4, 0, 0.2, 1) 0.08s;
+            }
+            nav.is-scrolled .nav-countdown {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            /* Afficher les secondes sur mobile aussi */
+            .nav-cd-unit--sec { display: flex; }
+        }
+
+        /* ============================================================
+           HERO
+           ============================================================ */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 9rem 1.5rem 6rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        /* Ambient glow — signature Sovereign Horizon */
+        .hero::before {
+            content: '';
+            position: absolute;
+            width: 700px;
+            height: 700px;
+            background: radial-gradient(circle, rgba(166,218,255,0.055) 0%, transparent 65%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -54%);
+            pointer-events: none;
+        }
+        /* Subtle grid texture — ref: trycook.ai */
+        .hero::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+            background-size: 60px 60px;
+            mask-image: radial-gradient(ellipse 60% 60% at 50% 40%, black 0%, transparent 100%);
+            -webkit-mask-image: radial-gradient(ellipse 60% 60% at 50% 40%, black 0%, transparent 100%);
+            pointer-events: none;
+        }
+
+        .hero-label {
+            position: relative;
+            z-index: 1;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 0.68rem;
+            font-weight: 600;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--primary-fixed-dim);
+            background: rgba(153, 205, 241, 0.08);
+            border: 1px solid rgba(153, 205, 241, 0.18);
+            padding: 0.5rem 1.1rem;
+            border-radius: 9999px;
+            margin-bottom: 2.75rem;
+            backdrop-filter: blur(8px);
+        }
+        .hero-label::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--primary-container);
+            box-shadow: 0 0 8px rgba(166,218,255,0.8);
+            animation: pulse 2s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; box-shadow: 0 0 8px rgba(166,218,255,0.8); }
+            50% { opacity: 0.5; box-shadow: 0 0 4px rgba(166,218,255,0.3); }
+        }
+
+        .hero-h1 {
+            position: relative;
+            z-index: 1;
+            font-family: var(--font-serif);
+            font-style: italic;
+            font-size: clamp(3.5rem, 11vw, 8.5rem);
+            line-height: 0.88;
+            letter-spacing: -0.03em;
+            margin-bottom: 2.25rem;
+            max-width: 860px;
+        }
+        .hero-h1 .line-dim   { color: rgba(227, 242, 255, 0.35); display: block; }
+        .hero-h1 .line-bright { color: var(--primary-container); display: block; }
+        .hero-h1 .line-mid   { color: rgba(227, 242, 255, 0.55); display: block; font-size: 0.6em; letter-spacing: -0.01em; margin-top: 0.3em; }
+
+        /* ---- Rotating word animation ---- */
+        .hero-rotate-wrap {
+            display: block;
+            position: relative;
+            overflow: hidden;
+            height: 1em;
+        }
+        .hero-rotate-item {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            white-space: nowrap;
+            transform: translateY(110%);
+            opacity: 0;
+            transition:
+                transform 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+                opacity   0.45s ease;
+            will-change: transform, opacity;
+        }
+        .hero-rotate-item.is-active {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        .hero-rotate-item.is-exit {
+            transform: translateY(-110%);
+            opacity: 0;
+            transition:
+                transform 0.6s cubic-bezier(0.55, 0, 1, 0.45),
+                opacity   0.3s ease;
+        }
+
+        .hero-sub {
+            position: relative;
+            z-index: 1;
+            font-size: clamp(1rem, 1.8vw, 1.15rem);
+            font-weight: 500;
+            color: var(--on-surface-variant);
+            max-width: 520px;
+            line-height: 1.7;
+            margin-bottom: 3rem;
+        }
+
+        /* CTA */
+        .btn-primary {
+            display: inline-block;
+            background: var(--primary-container);
+            color: var(--on-primary-fixed);
+            padding: 0.95rem 2.25rem;
+            border-radius: 9999px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            font-family: var(--font-sans);
+            transition: box-shadow 0.25s ease, transform 0.25s ease;
+            letter-spacing: 0.005em;
+        }
+        .btn-primary:hover {
+            box-shadow: 0 0 36px rgba(166,218,255,0.38), 0 12px 28px rgba(0,0,0,0.35);
+            transform: translateY(-2px);
+        }
+
+        .hero-meta {
+            position: relative;
+            z-index: 1;
+            margin-bottom: 3.5rem;
+        }
+
+        /* Countdown */
+        .countdown {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            gap: clamp(1rem, 3vw, 2.5rem);
+            align-items: flex-end;
+            justify-content: center;
+        }
+        .cd-unit {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        .cd-number {
+            font-family: var(--font-serif);
+            font-size: clamp(2.2rem, 5.5vw, 4rem);
+            line-height: 1;
+            color: var(--primary);
+            letter-spacing: -0.03em;
+            min-width: 2.5ch;
+            text-align: center;
+        }
+        .cd-label {
+            font-size: 0.6rem;
+            font-weight: 600;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--on-surface-variant);
+            opacity: 0.6;
+        }
+        .cd-sep {
+            font-family: var(--font-serif);
+            font-size: clamp(1.5rem, 3vw, 2.5rem);
+            color: var(--outline-variant);
+            padding-bottom: 0.4rem;
+            opacity: 0.5;
+        }
+
+        /* ============================================================
+           PROOF STRIP
+           ============================================================ */
+        .proof-strip {
+            background: var(--surface-container-low);
+            padding: 4.5rem 1.5rem;
+        }
+        .proof-inner {
+            max-width: 960px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0;
+        }
+        .proof-item {
+            text-align: center;
+            padding: 2rem 1.5rem;
+            position: relative;
+        }
+        .proof-item + .proof-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 20%;
+            height: 60%;
+            width: 1px;
+            background: linear-gradient(to bottom, transparent, rgba(65,72,77,0.4), transparent);
+        }
+        .proof-number {
+            font-family: var(--font-serif);
+            font-size: clamp(2.8rem, 6vw, 4.5rem);
+            line-height: 1;
+            color: var(--primary-container);
+            letter-spacing: -0.04em;
+            display: block;
+            margin-bottom: 0.6rem;
+        }
+        .proof-desc {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--on-surface-variant);
+            line-height: 1.55;
+        }
+
+        /* ============================================================
+           SECTIONS — Base layout
+           ============================================================ */
+        .section {
+            padding: clamp(4rem, 9vw, 8rem) 1.5rem;
+        }
+        .section-alt { background: var(--surface-container-low); }
+
+        .section-inner {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .section-inner-narrow {
+            max-width: 680px;
+            margin: 0 auto;
+        }
+
+        .overline {
+            display: block;
+            font-size: 0.68rem;
+            font-weight: 600;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: var(--primary-fixed-dim);
+            margin-bottom: 1.5rem;
+        }
+        .section-title {
+            font-family: var(--font-serif);
+            font-style: normal;
+            font-size: clamp(2rem, 5vw, 3.4rem);
+            line-height: 1.05;
+            letter-spacing: -0.025em;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+        }
+        .section-body {
+            font-size: 1.05rem;
+            font-weight: 500;
+            color: var(--on-surface-variant);
+            line-height: 1.72;
+            max-width: 580px;
+        }
+
+        /* ============================================================
+           MECHANISM STEPS
+           ============================================================ */
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.25rem;
+            margin-top: 4rem;
+        }
+        .step-card {
+            background: var(--surface-container);
+            border-radius: 18px;
+            padding: 2rem 1.75rem;
+            box-shadow: 0 1px 0 rgba(153,205,241,0.05) inset;
+            transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .step-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 18px;
+            box-shadow: 0 0 0 1px rgba(153,205,241,0);
+            transition: box-shadow 0.3s ease;
+        }
+        .step-card:hover {
+            background: var(--surface-container-high);
+            transform: translateY(-5px);
+            box-shadow: 0 24px 48px rgba(0,0,0,0.32);
+        }
+        .step-card:hover::after {
+            box-shadow: 0 0 0 1px rgba(153,205,241,0.12);
+        }
+        .step-num {
+            font-family: var(--font-serif);
+            font-size: 3.5rem;
+            line-height: 1;
+            color: rgba(166,218,255,0.1);
+            margin-bottom: 1.2rem;
+            display: block;
+        }
+        .step-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 0.7rem;
+            letter-spacing: -0.01em;
+        }
+        .step-body {
+            font-size: 0.88rem;
+            font-weight: 500;
+            color: var(--on-surface-variant);
+            line-height: 1.65;
+        }
+
+        /* ============================================================
+           FOR WHO — Double column
+           ============================================================ */
+        .for-who-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5rem;
+            margin-top: 4rem;
+        }
+        .col-title {
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            margin-bottom: 1.75rem;
+        }
+        .col-title.yes { color: var(--primary-fixed-dim); }
+        .col-title.no  { color: rgba(255, 110, 90, 0.6); }
+
+        .checklist {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 1.1rem;
+        }
+        .checklist li {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.85rem;
+            font-size: 0.92rem;
+            font-weight: 500;
+            color: var(--on-surface-variant);
+            line-height: 1.55;
+        }
+        .check-icon {
+            width: 20px;
+            height: 20px;
+            min-width: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.6rem;
+            font-weight: 800;
+            margin-top: 1px;
+            flex-shrink: 0;
+        }
+        .check-icon.yes {
+            background: rgba(166,218,255,0.12);
+            border: 1px solid rgba(166,218,255,0.22);
+            color: var(--primary-container);
+        }
+        .check-icon.no {
+            background: rgba(255,100,80,0.08);
+            border: 1px solid rgba(255,100,80,0.18);
+            color: rgba(255,120,100,0.8);
+        }
+
+        /* ============================================================
+           FOMO QUOTE
+           ============================================================ */
+        .fomo {
+            padding: clamp(4rem, 8vw, 7rem) 1.5rem;
+        }
+        .fomo-quote {
+            font-family: var(--font-serif);
+            font-style: italic;
+            font-size: clamp(1.5rem, 3.5vw, 2.4rem);
+            line-height: 1.35;
+            color: var(--primary);
+            max-width: 760px;
+            margin: 0 auto;
+            text-align: center;
+            position: relative;
+            padding: 0 1rem;
+        }
+        .fomo-mark {
+            font-family: var(--font-serif);
+            font-size: 6rem;
+            line-height: 0;
+            color: rgba(166,218,255,0.07);
+            position: absolute;
+            top: 0.5rem;
+            left: -1.5rem;
+        }
+        .fomo-attribution {
+            display: block;
+            margin-top: 1.75rem;
+            font-family: var(--font-sans);
+            font-style: normal;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.13em;
+            text-transform: uppercase;
+            color: var(--on-surface-variant);
+            opacity: 0.5;
+        }
+
+        /* ============================================================
+           REGISTRATION FORM
+           ============================================================ */
+        .form-card {
+            background: var(--surface-container);
+            border-radius: 24px;
+            padding: clamp(2rem, 4vw, 3rem);
+            max-width: 540px;
+            margin: 3.5rem auto 0;
+            box-shadow:
+                0 1px 0 rgba(153,205,241,0.07) inset,
+                0 48px 96px rgba(0,0,0,0.45);
+        }
+        .form-group { margin-bottom: 1.75rem; }
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0 1.5rem;
+        }
+        .form-label {
+            display: block;
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--on-surface-variant);
+            margin-bottom: 0.65rem;
+        }
+        .form-input,
+        .form-select {
+            width: 100%;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid var(--surface-variant);
+            padding: 0.75rem 0;
+            color: var(--on-surface);
+            font-size: 0.98rem;
+            font-family: var(--font-sans);
+            outline: none;
+            transition: border-color 0.22s ease, box-shadow 0.22s ease;
+            -webkit-appearance: none;
+        }
+        .form-input:focus,
+        .form-select:focus {
+            border-bottom-color: var(--primary-container);
+            box-shadow: 0 4px 14px rgba(166,218,255,0.1);
+        }
+        .form-input::placeholder { color: var(--outline-variant); }
+        .form-select { cursor: pointer; }
+        .form-select option { background: var(--surface-container-highest); color: var(--on-surface); }
+
+        /* Phone field with country code */
+        .form-phone-wrapper {
+            display: flex;
+            align-items: flex-end;
+            gap: 0;
+            border-bottom: 2px solid var(--surface-variant);
+            transition: border-color 0.22s ease, box-shadow 0.22s ease;
+        }
+        .form-phone-wrapper:focus-within {
+            border-bottom-color: var(--primary-container);
+            box-shadow: 0 4px 14px rgba(166,218,255,0.1);
+        }
+        /* ── intl-tel-input — dark theme ───────────────────────────── */
+        .form-phone-wrapper .iti { width: 100%; }
+        .form-phone-input {
+            width: 100%;
+            background: transparent;
+            color: var(--on-surface);
+            font-family: var(--font-sans);
+            font-size: 0.95rem;
+            padding: 0.75rem 0;
+            border: none;
+            outline: none;
+        }
+        .form-phone-input::placeholder { color: var(--on-surface-variant); opacity: 0.5; }
+        .iti__selected-flag {
+            background: transparent !important;
+            border-right: 1px solid var(--outline-variant);
+            padding: 0 0.75rem 0 0 !important;
+            border-radius: 0;
+            outline: none;
+        }
+        .iti__selected-flag:hover,
+        .iti__selected-flag[aria-expanded="true"] {
+            background: rgba(153, 205, 241, 0.06) !important;
+        }
+        .iti__selected-dial-code {
+            color: var(--on-surface);
+            font-size: 0.88rem;
+            font-family: var(--font-sans);
+        }
+        .iti__arrow { border-top-color: var(--on-surface-variant) !important; opacity: 0.5; }
+        .iti__arrow--up { border-top: none !important; border-bottom: 4px solid var(--on-surface-variant) !important; }
+        /* Dropdown */
+        .iti__dropdown-content {
+            background: var(--surface-container-high) !important;
+            border: 1px solid var(--outline-variant) !important;
+            border-radius: 12px !important;
+            box-shadow: 0 20px 48px rgba(0,0,0,0.55) !important;
+            overflow: hidden;
+        }
+        .iti__search-input {
+            background: var(--surface-container-low) !important;
+            color: var(--on-surface) !important;
+            border: none !important;
+            border-bottom: 1px solid var(--outline-variant) !important;
+            font-family: var(--font-sans) !important;
+            font-size: 0.88rem !important;
+            padding: 0.75rem 1rem !important;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .iti__search-input::placeholder { color: var(--on-surface-variant) !important; opacity: 0.5; }
+        .iti__country { color: var(--on-surface) !important; padding: 0.5rem 1rem !important; }
+        .iti__country:hover,
+        .iti__country.iti__highlight { background: var(--surface-container-highest) !important; }
+        .iti__country-name { color: var(--on-surface) !important; font-size: 0.87rem !important; }
+        .iti__dial-code { color: var(--on-surface-variant) !important; font-size: 0.82rem !important; }
+        .iti__divider { border-color: var(--outline-variant) !important; }
+
+        .radio-group {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .radio-label {
+            display: flex;
+            align-items: center;
+            gap: 0.55rem;
+            font-size: 0.92rem;
+            color: var(--on-surface-variant);
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .radio-label:hover { color: var(--primary); }
+        .radio-label input[type="radio"] {
+            accent-color: var(--primary-container);
+            width: 15px;
+            height: 15px;
+        }
+
+        .form-submit {
+            width: 100%;
+            margin-top: 2rem;
+            font-size: 0.88rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        /* Trust signals row */
+        .form-trust-row {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 0.5rem 1.4rem;
+            margin-top: 1.1rem;
+        }
+        .form-trust-item {
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--on-surface-variant);
+            opacity: 0.6;
+        }
+        .form-trust-dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--primary-fixed-dim);
+            flex-shrink: 0;
+        }
+
+        /* No replay note */
+        .form-no-replay {
+            margin-top: 1.75rem;
+            padding: 1rem 1.1rem;
+            background: rgba(153,205,241,0.04);
+            border-left: 2px solid rgba(153,205,241,0.2);
+            border-radius: 0 8px 8px 0;
+            font-size: 0.73rem;
+            font-weight: 500;
+            color: var(--on-surface-variant);
+            line-height: 1.6;
+            letter-spacing: 0.01em;
+        }
+        .form-no-replay strong {
+            color: var(--primary-fixed-dim);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            font-size: 0.68rem;
+        }
+
+        @media (max-width: 480px) {
+            .form-grid { grid-template-columns: 1fr; gap: 0; }
+        }
+
+        /* Success state */
+        .form-success {
+            display: none;
+            text-align: center;
+            padding: 1rem 0 0.5rem;
+        }
+        .success-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(166,218,255,0.1);
+            border: 1px solid rgba(166,218,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 1.3rem;
+            color: var(--primary-container);
+        }
+        .success-title {
+            font-family: var(--font-serif);
+            font-style: italic;
+            font-size: 1.6rem;
+            color: var(--primary);
+            margin-bottom: 0.75rem;
+        }
+        .success-body {
+            font-size: 0.92rem;
+            color: var(--on-surface-variant);
+            line-height: 1.65;
+        }
+
+        /* ============================================================
+           FAQ
+           ============================================================ */
+        .faq-list { margin-top: 3rem; }
+        .faq-item {
+            border-bottom: 1px solid rgba(65,72,77,0.2);
+        }
+        .faq-btn {
+            width: 100%;
+            text-align: left;
+            background: none;
+            border: none;
+            color: var(--on-surface);
+            font-size: 0.97rem;
+            font-family: var(--font-sans);
+            font-weight: 600;
+            padding: 1.5rem 0;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            transition: color 0.2s ease;
+            line-height: 1.4;
+        }
+        .faq-btn:hover { color: var(--primary); }
+        .faq-icon {
+            font-size: 1.1rem;
+            color: var(--primary-fixed-dim);
+            transition: transform 0.3s ease;
+            flex-shrink: 0;
+            line-height: 1;
+        }
+        .faq-item.open .faq-icon { transform: rotate(45deg); }
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.38s ease, padding 0.3s ease;
+        }
+        .faq-item.open .faq-answer {
+            max-height: 250px;
+            padding-bottom: 1.5rem;
+        }
+        .faq-answer p {
+            font-size: 0.92rem;
+            color: var(--on-surface-variant);
+            line-height: 1.7;
+        }
+
+        /* ============================================================
+           FOOTER
+           ============================================================ */
+        footer {
+            background: var(--surface-container-low);
+            padding: 3rem 1.5rem;
+            text-align: center;
+        }
+        .footer-logo {
+            font-family: var(--font-serif);
+            font-size: 1.4rem;
+            color: var(--primary);
+            margin-bottom: 0.75rem;
+        }
+        .footer-copy {
+            font-size: 0.75rem;
+            color: var(--on-surface-variant);
+            opacity: 0.35;
+        }
+
+        /* ============================================================
+           SCROLL ANIMATION
+           ============================================================ */
+        .fade-up {
+            opacity: 0;
+            transform: translateY(22px);
+            transition: opacity 0.55s ease, transform 0.55s ease;
+        }
+        .fade-up.in { opacity: 1; transform: translateY(0); }
+
+        /* ============================================================
+           RESPONSIVE
+           ============================================================ */
+        @media (max-width: 768px) {
+            .proof-inner { grid-template-columns: 1fr; }
+            .proof-item + .proof-item::before { display: none; }
+            .for-who-grid { grid-template-columns: 1fr; gap: 3rem; }
+            nav { gap: 0.5rem; }
+        }
+        @media (max-width: 480px) {
+            .hero-h1 { font-size: clamp(3rem, 13vw, 4rem); }
+            /* Autoriser le retour à la ligne sur mobile */
+            .hero-rotate-item { white-space: normal; }
+            /* Hauteur juste pour 2 lignes max (line-height: 0.88 × 2) */
+            .hero-rotate-wrap { height: 1.9em; }
+            /* Réduire l'espace entre l'animation et "voici le système." */
+            .hero-h1 .line-mid { margin-top: 0.1em; }
+            .countdown { gap: 1rem; }
+            .cd-sep { display: none; }
+        }
+    </style>
+
+    <!-- Microsoft Clarity — heatmaps, session recordings, scroll maps -->
+    <script type="text/javascript">
+        (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        })(window, document, "clarity", "script", "vzn1u2lble");
+    </script>
+
+    <!-- Google Analytics 4 — trafic, sources, durée de session, conversions -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KKZLDHSWHW"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-KKZLDHSWHW');
+    </script>
+
+    <!-- Meta Pixel Code — attribution ads Facebook/Instagram -->
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '1888896432004340');
+    fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=1888896432004340&ev=PageView&noscript=1"
+    /></noscript>
+    <!-- End Meta Pixel Code -->
+</head>
+<body>
+
+<!-- ================================================================
+     NAVIGATION
+     ================================================================ -->
+<nav>
+    <span class="nav-logo">Immigration Flow</span>
+    <div class="nav-countdown" id="nav-countdown">
+        <div class="nav-cd-unit">
+            <span class="nav-cd-num" id="nav-cd-days">00</span>
+            <span class="nav-cd-lbl">j</span>
+        </div>
+        <div class="nav-cd-unit">
+            <span class="nav-cd-num" id="nav-cd-hours">00</span>
+            <span class="nav-cd-lbl">h</span>
+        </div>
+        <div class="nav-cd-unit">
+            <span class="nav-cd-num" id="nav-cd-minutes">00</span>
+            <span class="nav-cd-lbl">m</span>
+        </div>
+        <div class="nav-cd-unit nav-cd-unit--sec">
+            <span class="nav-cd-num" id="nav-cd-seconds">00</span>
+            <span class="nav-cd-lbl">s</span>
+        </div>
+    </div>
+    <a href="#inscription" class="nav-cta">Réserver ma place</a>
+</nav>
+
+
+<!-- ================================================================
+     HERO
+     ================================================================ -->
+<section class="hero">
+    <span class="hero-label">Live Zoom &nbsp;·&nbsp; Vendredi 4 Avril 2026 &nbsp;·&nbsp; 18h00 Kinshasa</span>
+
+    <h1 class="hero-h1">
+        <span class="line-dim">15 rendez-vous</span>
+        <span class="line-bright">
+            <span class="hero-rotate-wrap" aria-live="polite">
+                <span class="hero-rotate-item is-active">en 7 jours.</span>
+                <span class="hero-rotate-item">100&nbsp;% honorés.</span>
+                <span class="hero-rotate-item">10% moins de trafic.</span>
+                <span class="hero-rotate-item">agenda rempli.</span>
+            </span>
+        </span>
+        <span class="line-mid">voici le système.</span>
+    </h1>
+
+    <p class="hero-sub">
+        Ce vendredi 4 avril, je vous ouvre le mécanisme complet : ce qu'on a mis en place pour cette agence, dans quel ordre, avec les chiffres à chaque étape. Un cas réel. Des résultats vérifiables.
+    </p>
+
+    <div class="hero-meta">
+        <a href="#inscription" class="btn-primary">Réserver ma place · Gratuit</a>
+    </div>
+
+    <div class="countdown" id="countdown">
+        <div class="cd-unit">
+            <span class="cd-number" id="cd-days">00</span>
+            <span class="cd-label">Jours</span>
+        </div>
+        <span class="cd-sep">:</span>
+        <div class="cd-unit">
+            <span class="cd-number" id="cd-hours">00</span>
+            <span class="cd-label">Heures</span>
+        </div>
+        <span class="cd-sep">:</span>
+        <div class="cd-unit">
+            <span class="cd-number" id="cd-minutes">00</span>
+            <span class="cd-label">Minutes</span>
+        </div>
+        <span class="cd-sep">:</span>
+        <div class="cd-unit">
+            <span class="cd-number" id="cd-seconds">00</span>
+            <span class="cd-label">Secondes</span>
+        </div>
+    </div>
+</section>
+
+
+<!-- ================================================================
+     PROOF STRIP
+     ================================================================ -->
+<div class="proof-strip">
+    <div class="proof-inner">
+        <div class="proof-item fade-up">
+            <span class="proof-number">15</span>
+            <p class="proof-desc">Nouveaux rendez-vous qualifiés<br>dans la première semaine</p>
+        </div>
+        <div class="proof-item fade-up" style="transition-delay:.1s">
+            <span class="proof-number">60+</span>
+            <p class="proof-desc">Contacts qualifiés<br>en une semaine</p>
+        </div>
+        <div class="proof-item fade-up" style="transition-delay:.2s">
+            <span class="proof-number">100%</span>
+            <p class="proof-desc">Des rendez-vous honorés.<br>Zéro no-show.</p>
+        </div>
+    </div>
+</div>
+
+
+<!-- ================================================================
+     MECHANISM — Ce que vous allez découvrir
+     ================================================================ -->
+<section class="section">
+    <div class="section-inner">
+        <span class="overline fade-up">Ce que vous allez découvrir</span>
+        <h2 class="section-title fade-up">Le système, étape par étape.</h2>
+        <p class="section-body fade-up">
+            Je vais vous montrer ce qu'on a fait, dans quel ordre, avec les résultats à chaque étape. Cas réel, chiffres réels.
+        </p>
+
+        <div class="steps-grid">
+            <div class="step-card fade-up">
+                <span class="step-num">01</span>
+                <h3 class="step-title">Le message qui fait réagir</h3>
+                <p class="step-body">Pourquoi la plupart des agences attirent les mauvaises personnes, et ce qu'on a changé dans le message pour que tout bascule dès les premiers jours.</p>
+            </div>
+            <div class="step-card fade-up" style="transition-delay:.08s">
+                <span class="step-num">02</span>
+                <h3 class="step-title">Le filtre automatique 24h/24</h3>
+                <p class="step-body">Comment qualifier les prospects sans répondre à chaque message. Ce qu'on a mis en place pour récupérer 2 à 3 heures par jour, et comment vous pouvez faire pareil.</p>
+            </div>
+            <div class="step-card fade-up" style="transition-delay:.16s">
+                <span class="step-num">03</span>
+                <h3 class="step-title">Le pipeline prévisible</h3>
+                <p class="step-body">La structure qui génère le même volume de prospects chaque semaine. Fini le bouche-à-oreille aléatoire. Vous savez ce qui arrive le mois prochain.</p>
+            </div>
+            <div class="step-card fade-up" style="transition-delay:.24s">
+                <span class="step-num">04</span>
+                <h3 class="step-title">Ce qu'on n'explique jamais</h3>
+                <p class="step-body">Les deux décisions précises qui ont fait que 100&nbsp;% des rendez-vous ont été honorés, et comment en faire autant dans votre agence.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ================================================================
+     FOR WHO
+     ================================================================ -->
+<section class="section section-alt">
+    <div class="section-inner">
+        <span class="overline fade-up">Pour qui c'est</span>
+        <h2 class="section-title fade-up">Vous vous retrouvez<br>là-dedans&nbsp;?</h2>
+
+        <div class="for-who-grid">
+            <div>
+                <p class="col-title yes fade-up">Ce live est pour vous si :</p>
+                <ul class="checklist fade-up">
+                    <li>
+                        <span class="check-icon yes">✓</span>
+                        Vous avez une agence de voyage ou d'immigration active en Afrique francophone
+                    </li>
+                    <li>
+                        <span class="check-icon yes">✓</span>
+                        Vous faites entre 3 et 10 clients par mois, principalement par bouche-à-oreille
+                    </li>
+                    <li>
+                        <span class="check-icon yes">✓</span>
+                        Vous voulez savoir combien de prospects arrivent le mois prochain. Pas espérer. Savoir.
+                    </li>
+                    <li>
+                        <span class="check-icon yes">✓</span>
+                        Vous passez trop de temps à qualifier des gens qui ne signeront jamais
+                    </li>
+                    <li>
+                        <span class="check-icon yes">✓</span>
+                        Vous voulez un cas réel, des chiffres réels. Pas une présentation générique.
+                    </li>
+                </ul>
+            </div>
+            <div>
+                <p class="col-title no fade-up">Ce n'est pas pour vous si :</p>
+                <ul class="checklist fade-up">
+                    <li>
+                        <span class="check-icon no">×</span>
+                        Votre agence n'est pas encore lancée. Ce qu'on montre ici a besoin d'une base pour fonctionner.
+                    </li>
+                    <li>
+                        <span class="check-icon no">×</span>
+                        Vous cherchez des résultats en 24 heures sans rien changer à votre approche
+                    </li>
+                    <li>
+                        <span class="check-icon no">×</span>
+                        Vous préférez les promesses vagues aux mécanismes concrets
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ================================================================
+     FOMO QUOTE
+     ================================================================ -->
+<section class="fomo">
+    <blockquote class="fomo-quote fade-up">
+        <span class="fomo-mark">&ldquo;</span>
+        Si je ne fais pas ça maintenant, dans 12 mois je vais regarder un concurrent qui l'a fait, et me demander pourquoi je n'ai pas bougé quand j'en avais la chance.
+        <span class="fomo-attribution">La phrase dans la tête de celui qui attend encore</span>
+    </blockquote>
+</section>
+
+
+<!-- ================================================================
+     REGISTRATION
+     ================================================================ -->
+<section class="section section-alt" id="inscription">
+    <div class="section-inner-narrow" style="text-align:center">
+        <span class="overline fade-up">Inscription · Places limitées</span>
+        <h2 class="section-title fade-up">Réservez votre place<br>au live du 4 avril.</h2>
+        <p class="fade-up" style="font-size:1rem; color:var(--on-surface-variant); line-height:1.65; margin:0 auto;">
+            L'accès est gratuit. Les places sont volontairement limitées. On préfère un vrai échange à une salle de 500 personnes où personne n'interagit.
+        </p>
+
+        <div class="form-card fade-up">
+            <form id="reg-form">
+
+                <!-- Prénom + Nom — 2 colonnes -->
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label" for="f-firstname">Prénom *</label>
+                        <input type="text" id="f-firstname" name="firstname" class="form-input" placeholder="Jean" autocomplete="given-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="f-lastname">Nom *</label>
+                        <input type="text" id="f-lastname" name="lastname" class="form-input" placeholder="Mbala" autocomplete="family-name" required>
+                    </div>
+                </div>
+
+                <!-- WhatsApp avec indicatif searchable -->
+                <div class="form-group">
+                    <label class="form-label" for="f-phone">Numéro WhatsApp *</label>
+                    <div class="form-phone-wrapper">
+                        <input type="tel" id="f-phone" name="phone" class="form-phone-input" placeholder="812 345 678" autocomplete="tel" required>
+                    </div>
+                </div>
+
+                <!-- Nom d'agence -->
+                <div class="form-group">
+                    <label class="form-label" for="f-agency">Nom de votre agence *</label>
+                    <input type="text" id="f-agency" name="agency" class="form-input" placeholder="Nom de votre agence ou business" required>
+                </div>
+
+                <!-- Qualification -->
+                <div class="form-group">
+                    <label class="form-label">Votre agence est-elle active aujourd'hui&nbsp;?</label>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="active" value="yes" required>
+                            Oui, elle est active
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="active" value="no">
+                            Non, pas encore
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary form-submit">JE RÉSERVE MA PLACE · GRATUIT</button>
+
+                <div class="form-trust-row">
+                    <span class="form-trust-item"><span class="form-trust-dot"></span>Gratuit</span>
+                    <span class="form-trust-item"><span class="form-trust-dot"></span>Aucun spam</span>
+                    <span class="form-trust-item"><span class="form-trust-dot"></span>Places limitées</span>
+                    <span class="form-trust-item"><span class="form-trust-dot"></span>Agences actives uniquement</span>
+                </div>
+
+                <p class="form-no-replay"><strong>Pas de replay.</strong> Ce qu'on montre ici donne un avantage concret sur la concurrence. Ceux qui sont présents le 4 avril ont un coup d'avance. Et ça reste entre eux.</p>
+
+            </form>
+
+            <div class="form-success" id="form-success">
+                <div class="success-icon">✓</div>
+                <h3 class="success-title">Votre place est confirmée.</h3>
+                <p class="success-body">
+                    Le lien Zoom vous sera envoyé avant le 4 avril.<br>
+                    <strong style="color:var(--primary)">Notez la date : vendredi 4 avril à 18h00 (heure Kinshasa).</strong>
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ================================================================
+     FAQ
+     ================================================================ -->
+<section class="section">
+    <div class="section-inner-narrow">
+        <span class="overline fade-up">Questions fréquentes</span>
+        <h2 class="section-title fade-up">Ce que vous vous demandez sûrement.</h2>
+
+        <div class="faq-list">
+            <div class="faq-item">
+                <button class="faq-btn">
+                    C'est vraiment gratuit ?
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Oui, entièrement. Ce n'est pas un webinaire de vente. C'est une session de travail. Je vous montre ce qu'on a fait, avec les vrais chiffres, dans l'ordre. Si à la fin vous voulez aller plus loin, il y aura un moment pour en parler. Rien de caché et aucune obligation.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-btn">
+                    Combien de temps dure la session ?
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Environ 60 à 75 minutes, avec 15 minutes d'échanges à la fin. Pas de remplissage, pas de slides génériques. Uniquement le mécanisme et les résultats concrets, étape par étape.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-btn">
+                    Est-ce que ça marche pour mon type d'agence ?
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Si vous avez une agence de voyage ou d'immigration en Afrique francophone avec des clients, oui. C'est une agence réelle dans ce contexte. Pas un exemple américain adapté.</p>
+                </div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-btn">
+                    Y a-t-il un replay disponible ?
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Non. Ce qu'on montre ici, on ne le diffuse pas. Regarder un replay, ce n'est pas la même chose qu'être là. Il n'y aura pas de rediffusion.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ================================================================
+     FOOTER
+     ================================================================ -->
+<footer>
+    <div class="footer-logo">Immigration Flow</div>
+    <p class="footer-copy">© 2026 · Immigration Flow · Tous droits réservés</p>
+</footer>
+
+
+<!-- ================================================================
+     JAVASCRIPT
+     ================================================================ -->
+<script src="https://cdn.jsdelivr.net/npm/intl-tel-input@23/build/js/intlTelInput.min.js"></script>
+<script>
+    /* ---- ANALYTICS — Helper centralisé (GA4 + Meta Pixel + Clarity) ---- */
+    function trackEvent(eventName, params) {
+        params = params || {};
+        if (typeof gtag !== 'undefined') gtag('event', eventName, params);
+        if (typeof fbq !== 'undefined') fbq('track', eventName, params);
+        if (typeof clarity !== 'undefined') clarity('event', eventName);
+    }
+
+    /* ---- SCROLL DEPTH — 50% et 75% ---- */
+    var scrollMilestones = { 50: false, 75: false };
+    window.addEventListener('scroll', function() {
+        var scrollPct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+        if (!scrollMilestones[50] && scrollPct >= 50) {
+            scrollMilestones[50] = true;
+            trackEvent('scroll_50');
+        }
+        if (!scrollMilestones[75] && scrollPct >= 75) {
+            scrollMilestones[75] = true;
+            trackEvent('scroll_75');
+        }
+    }, { passive: true });
+
+    /* ---- CTA CLICKS — nav + hero (liens uniquement, pas le submit) ---- */
+    document.querySelectorAll('a.nav-cta, a.btn-primary').forEach(function(el) {
+        el.addEventListener('click', function() {
+            trackEvent('cta_click', { label: el.textContent.trim().substring(0, 40) });
+        });
+    });
+
+    /* ---- SECTION INSCRIPTION — visible dans viewport ---- */
+    var inscriptionObserver = new IntersectionObserver(function(entries) {
+        entries.forEach(function(e) {
+            if (e.isIntersecting) {
+                trackEvent('section_inscription_view');
+                inscriptionObserver.disconnect();
+            }
+        });
+    }, { threshold: 0.2 });
+    var inscriptionSection = document.getElementById('inscription');
+    if (inscriptionSection) inscriptionObserver.observe(inscriptionSection);
+
+    /* ---- FORM START — premier focus sur un champ ---- */
+    var formStarted = false;
+    document.querySelectorAll('#reg-form input, #reg-form button').forEach(function(el) {
+        el.addEventListener('focus', function() {
+            if (!formStarted) {
+                formStarted = true;
+                trackEvent('form_start');
+            }
+        }, { once: false });
+    });
+
+    /* ---- RADIO QUALIFICATION ---- */
+    document.querySelectorAll('input[name="active"]').forEach(function(radio) {
+        radio.addEventListener('change', function() {
+            if (this.value === 'yes') trackEvent('form_qualified');
+            if (this.value === 'no')  trackEvent('form_disqualified');
+        });
+    });
+
+    /* ---- INTL-TEL-INPUT — Phone field with searchable country flags ---- */
+    const iti = window.intlTelInput(document.getElementById('f-phone'), {
+        initialCountry: 'cd',
+        preferredCountries: ['cd', 'ci', 'sn', 'cm', 'cg', 'ga', 'bj', 'ml', 'fr', 'be'],
+        separateDialCode: true,
+        utilsScript: 'https://cdn.jsdelivr.net/npm/intl-tel-input@23/build/js/utils.js'
+    });
+
+    /* ---- HERO WORD ROTATION ---- */
+    (function () {
+        const items = Array.from(document.querySelectorAll('.hero-rotate-item'));
+        let current = 0;
+
+        setInterval(function () {
+            const prev = current;
+            current = (current + 1) % items.length;
+
+            // Exit current
+            items[prev].classList.remove('is-active');
+            items[prev].classList.add('is-exit');
+
+            // Enter next (tiny delay so both transitions don't clash)
+            setTimeout(function () {
+                items[current].classList.add('is-active');
+            }, 60);
+
+            // Clean up exit class after transition is done
+            setTimeout(function () {
+                items[prev].classList.remove('is-exit');
+            }, 800);
+        }, 2000);
+    })();
+
+    /* ---- COUNTDOWN TIMER ---- */
+    // April 4, 2026 at 18:00 Kinshasa Time (UTC+1)
+    const EVENT_DATE = new Date('2026-04-04T18:00:00+01:00');
+
+    function pad(n) { return String(n).padStart(2, '0'); }
+
+    function tick() {
+        const delta = EVENT_DATE - Date.now();
+        if (delta <= 0) {
+            document.getElementById('countdown').innerHTML =
+                '<span style="font-family:var(--font-serif);font-style:italic;font-size:1.4rem;color:var(--primary-container)">L\'événement est en cours. Rejoignez maintenant.</span>';
+            return;
+        }
+        const d = Math.floor(delta / 86400000);
+        const h = Math.floor((delta % 86400000) / 3600000);
+        const m = Math.floor((delta % 3600000) / 60000);
+        const s = Math.floor((delta % 60000) / 1000);
+        document.getElementById('cd-days').textContent    = pad(d);
+        document.getElementById('cd-hours').textContent   = pad(h);
+        document.getElementById('cd-minutes').textContent = pad(m);
+        document.getElementById('cd-seconds').textContent = pad(s);
+        // Nav mini-countdown
+        document.getElementById('nav-cd-days').textContent    = pad(d);
+        document.getElementById('nav-cd-hours').textContent   = pad(h);
+        document.getElementById('nav-cd-minutes').textContent = pad(m);
+        document.getElementById('nav-cd-seconds').textContent = pad(s);
+    }
+    tick();
+    setInterval(tick, 1000);
+
+
+    /* ---- SCROLL FADE IN ---- */
+    const fadeEls = document.querySelectorAll('.fade-up');
+    const io = new IntersectionObserver((entries) => {
+        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+    }, { threshold: 0.1, rootMargin: '0px 0px -32px 0px' });
+    fadeEls.forEach(el => io.observe(el));
+
+
+    /* ---- FAQ ACCORDION ---- */
+    document.querySelectorAll('.faq-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const item = btn.closest('.faq-item');
+            const isOpen = item.classList.contains('open');
+            document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+            if (!isOpen) item.classList.add('open');
+        });
+    });
+
+
+    /* ---- FORM SUBMISSION ----
+       TODO: Replace the fetch URL below with your real endpoint.
+       Options:
+         - Tally.so embed  → replace entire form with a Tally iframe
+         - n8n webhook     → fetch('https://your-n8n-instance/webhook/zoom-register', ...)
+         - Make/Zapier     → fetch('https://hook.make.com/...', ...)
+    ---- */
+    document.getElementById('reg-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const active = document.querySelector('input[name="active"]:checked');
+        if (!active) return;
+
+        if (active.value === 'no') {
+            trackEvent('form_disqualified');
+            alert('Ce live est réservé aux propriétaires d\'agences actives. Revenez quand votre agence sera lancée : ce que vous apprendrez ici sera encore plus concret.');
+            return;
+        }
+
+        const data = {
+            firstname: document.getElementById('f-firstname').value,
+            lastname:  document.getElementById('f-lastname').value,
+            whatsapp:  iti.getNumber(),
+            agency:    document.getElementById('f-agency').value,
+            active:    active.value,
+            ts:        new Date().toISOString()
+        };
+
+        // Simulated success — replace with real fetch when endpoint is ready
+        console.log('Registration data:', data);
+        // fetch('YOUR_WEBHOOK_URL', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) });
+
+        // Conversion principale — fired sur toutes les 3 plateformes
+        trackEvent('Lead', { currency: 'USD', value: 0 });
+
+        this.style.display = 'none';
+        document.getElementById('form-success').style.display = 'block';
+    });
+
+    // ── Navbar scroll-aware (intégrée hero → flottante) ──────────
+    (function () {
+        const nav = document.querySelector('nav');
+        const THRESHOLD = 80;
+
+        function updateNav() {
+            if (window.scrollY > THRESHOLD) {
+                nav.classList.add('is-scrolled');
+            } else {
+                nav.classList.remove('is-scrolled');
+            }
+        }
+
+        window.addEventListener('scroll', updateNav, { passive: true });
+        updateNav();
+    }());
+</script>
+</body>
+</html>
