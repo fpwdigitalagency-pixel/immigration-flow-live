@@ -1650,15 +1650,11 @@
 
         // Webhook N8N — prod: https://flow.fpw.agency/webhook/7580e5f4-a4cf-4249-9436-430dc46c6944
         // test:         https://flow.fpw.agency/webhook-test/7580e5f4-a4cf-4249-9436-430dc46c6944
-        // x-www-form-urlencoded + no-cors : évite le preflight CORS, N8N reçoit les champs parsés
-        var formPayload = new URLSearchParams();
-        Object.keys(data).forEach(function(k) { formPayload.append(k, data[k]); });
         fetch('https://flow.fpw.agency/webhook/7580e5f4-a4cf-4249-9436-430dc46c6944', {
             method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: formPayload.toString()
-        });
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        }).catch(function(err) { console.error('Webhook error:', err); });
 
         // Conversion principale — fired sur toutes les 3 plateformes
         trackEvent('Lead', { currency: 'USD', value: 0 });
