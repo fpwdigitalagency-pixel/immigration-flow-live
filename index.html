@@ -11,6 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
     <link href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@23/build/css/intlTelInput.css">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
 
     <style>
         /* ============================================================
@@ -240,17 +241,51 @@
             position: relative;
             overflow: hidden;
         }
-        /* Ambient glow — signature Sovereign Horizon */
+        /* Atmospheric depth — rayons diagonaux depuis coin haut-droit */
         .hero::before {
             content: '';
             position: absolute;
-            width: 700px;
-            height: 700px;
-            background: radial-gradient(circle, rgba(166,218,255,0.055) 0%, transparent 65%);
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -54%);
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at 80% 0%, rgba(166,218,255,0.06) 0%, transparent 52%);
+            top: 0;
+            left: 0;
             pointer-events: none;
+        }
+        /* Beams atmosphériques — inspiration HextaAI */
+        .hero-beams {
+            position: absolute;
+            top: -320px;
+            right: -160px;
+            width: 500px;
+            height: 720px;
+            display: flex;
+            gap: 3.5rem;
+            transform: rotate(-20deg) skewX(-30deg);
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.48;
+        }
+        .hero-beam {
+            display: block;
+            width: 60px;
+            flex-shrink: 0;
+            height: 100%;
+            filter: blur(38px);
+        }
+        .hero-beam--1 {
+            background: linear-gradient(180deg, rgba(166,218,255,0.58) 0%, transparent 80%);
+        }
+        .hero-beam--2 {
+            background: linear-gradient(180deg, rgba(153,205,241,0.40) 10%, transparent 75%);
+            margin-top: 60px;
+        }
+        .hero-beam--3 {
+            background: linear-gradient(180deg, rgba(227,242,255,0.22) 20%, transparent 70%);
+            margin-top: 115px;
+        }
+        @media (max-width: 768px) {
+            .hero-beams { opacity: 0.28; right: -220px; }
         }
         /* Subtle grid texture — ref: trycook.ai */
         .hero::after {
@@ -422,35 +457,43 @@
             padding-bottom: 0.4rem;
             opacity: 0.5;
         }
+        .local-time-hint {
+            text-align: center;
+            font-size: 0.72rem;
+            font-weight: 500;
+            letter-spacing: 0.08em;
+            color: var(--on-surface-variant);
+            opacity: 0.55;
+            margin-top: 1.2rem;
+        }
 
         /* ============================================================
            PROOF STRIP
            ============================================================ */
         .proof-strip {
-            background: var(--surface-container-low);
-            padding: 4.5rem 1.5rem;
+            background: var(--surface-dim);
+            padding: 2.5rem 1.5rem 5.5rem;
         }
         .proof-inner {
             max-width: 960px;
             margin: 0 auto;
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 0;
+            gap: 1.25rem;
         }
         .proof-item {
             text-align: center;
-            padding: 2rem 1.5rem;
+            padding: 2.25rem 1.5rem;
             position: relative;
+            background: var(--surface-container-high);
+            border-radius: 18px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        .proof-item + .proof-item::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 20%;
-            height: 60%;
-            width: 1px;
-            background: linear-gradient(to bottom, transparent, rgba(65,72,77,0.4), transparent);
+        .proof-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 40px rgba(0,0,0,0.32), 0 0 0 1px rgba(153,205,241,0.1);
         }
+        .proof-item + .proof-item::before { display: none; }
         .proof-number {
             font-family: var(--font-serif);
             font-size: clamp(2.8rem, 6vw, 4.5rem);
@@ -542,8 +585,26 @@
             box-shadow: 0 24px 48px rgba(0,0,0,0.32);
         }
         .step-card:hover::after {
-            box-shadow: 0 0 0 1px rgba(153,205,241,0.12);
+            box-shadow: 0 0 0 1px rgba(153,205,241,0.14);
         }
+        /* Spotlight overlay — radial gradient tracks mouse */
+        .step-spotlight {
+            position: absolute;
+            inset: 0;
+            border-radius: 18px;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0;
+            transition: opacity 0.35s ease;
+            background: radial-gradient(
+                circle 420px at var(--mx, -500px) var(--my, -500px),
+                rgba(153,205,241,0.12) 0%,
+                transparent 40%
+            );
+        }
+        .step-card:hover .step-spotlight { opacity: 1; }
+        /* Ensure card content sits above spotlight */
+        .step-num, .step-title, .step-body { position: relative; z-index: 1; }
         .step-num {
             font-family: var(--font-serif);
             font-size: 3.5rem;
@@ -1069,7 +1130,14 @@
      HERO
      ================================================================ -->
 <section class="hero">
-    <span class="hero-label">Live Zoom &nbsp;·&nbsp; Vendredi 4 Avril 2026 &nbsp;·&nbsp; 18h00 Kinshasa</span>
+    <!-- Atmospheric depth rays — diagonal beams from top-right -->
+    <div class="hero-beams" aria-hidden="true">
+        <span class="hero-beam hero-beam--1"></span>
+        <span class="hero-beam hero-beam--2"></span>
+        <span class="hero-beam hero-beam--3"></span>
+    </div>
+
+    <span class="hero-label">Live Zoom &nbsp;·&nbsp; Samedi 4 Avril 2026 &nbsp;·&nbsp; 18h00 Kinshasa</span>
 
     <h1 class="hero-h1">
         <span class="line-dim">15 rendez-vous</span>
@@ -1085,7 +1153,7 @@
     </h1>
 
     <p class="hero-sub">
-        Ce vendredi 4 avril, je vous ouvre le mécanisme complet : ce qu'on a mis en place pour cette agence, dans quel ordre, avec les chiffres à chaque étape. Un cas réel. Des résultats vérifiables.
+        Ce samedi 4 avril, je vous ouvre le mécanisme complet : ce qu'on a mis en place pour cette agence, dans quel ordre, avec les chiffres à chaque étape. Un cas réel. Des résultats vérifiables.
     </p>
 
     <div class="hero-meta">
@@ -1113,6 +1181,7 @@
             <span class="cd-label">Secondes</span>
         </div>
     </div>
+    <p class="local-time-hint" id="local-time-hint"></p>
 </section>
 
 
@@ -1150,21 +1219,25 @@
 
         <div class="steps-grid">
             <div class="step-card fade-up">
+                <div class="step-spotlight"></div>
                 <span class="step-num">01</span>
                 <h3 class="step-title">Le message qui fait réagir</h3>
                 <p class="step-body">Pourquoi la plupart des agences attirent les mauvaises personnes, et ce qu'on a changé dans le message pour que tout bascule dès les premiers jours.</p>
             </div>
             <div class="step-card fade-up" style="transition-delay:.08s">
+                <div class="step-spotlight"></div>
                 <span class="step-num">02</span>
                 <h3 class="step-title">Le filtre automatique 24h/24</h3>
                 <p class="step-body">Comment qualifier les prospects sans répondre à chaque message. Ce qu'on a mis en place pour récupérer 2 à 3 heures par jour, et comment vous pouvez faire pareil.</p>
             </div>
             <div class="step-card fade-up" style="transition-delay:.16s">
+                <div class="step-spotlight"></div>
                 <span class="step-num">03</span>
                 <h3 class="step-title">Le pipeline prévisible</h3>
                 <p class="step-body">La structure qui génère le même volume de prospects chaque semaine. Fini le bouche-à-oreille aléatoire. Vous savez ce qui arrive le mois prochain.</p>
             </div>
             <div class="step-card fade-up" style="transition-delay:.24s">
+                <div class="step-spotlight"></div>
                 <span class="step-num">04</span>
                 <h3 class="step-title">Ce qu'on n'explique jamais</h3>
                 <p class="step-body">Les deux décisions précises qui ont fait que 100&nbsp;% des rendez-vous ont été honorés, et comment en faire autant dans votre agence.</p>
@@ -1315,7 +1388,7 @@
                 <h3 class="success-title">Votre place est confirmée.</h3>
                 <p class="success-body">
                     Le lien Zoom vous sera envoyé avant le 4 avril.<br>
-                    <strong style="color:var(--primary)">Notez la date : vendredi 4 avril à 18h00 (heure Kinshasa).</strong>
+                    <strong style="color:var(--primary)">Notez la date : samedi 4 avril à 18h00 (heure Kinshasa).</strong>
                 </p>
             </div>
         </div>
@@ -1510,6 +1583,23 @@
     tick();
     setInterval(tick, 1000);
 
+    // Local time hint — affiche l'heure de l'événement dans le timezone du visiteur
+    (function() {
+        var el = document.getElementById('local-time-hint');
+        if (!el) return;
+        try {
+            var localStr = EVENT_DATE.toLocaleString(navigator.language || 'fr', {
+                weekday: 'long',
+                day: 'numeric',
+                month: 'long',
+                hour: '2-digit',
+                minute: '2-digit',
+                timeZoneName: 'short'
+            });
+            el.textContent = '→ Chez vous : ' + localStr;
+        } catch(e) { /* silent */ }
+    })();
+
 
     /* ---- SCROLL FADE IN ---- */
     const fadeEls = document.querySelectorAll('.fade-up');
@@ -1558,15 +1648,31 @@
             ts:        new Date().toISOString()
         };
 
-        // Simulated success — replace with real fetch when endpoint is ready
-        console.log('Registration data:', data);
-        // fetch('YOUR_WEBHOOK_URL', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) });
+        // Webhook N8N — prod: https://flow.fpw.agency/webhook/7580e5f4-a4cf-4249-9436-430dc46c6944
+        // test:         https://flow.fpw.agency/webhook-test/7580e5f4-a4cf-4249-9436-430dc46c6944
+        fetch('https://flow.fpw.agency/webhook/7580e5f4-a4cf-4249-9436-430dc46c6944', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        }).catch(function(err) { console.error('Webhook error:', err); });
 
         // Conversion principale — fired sur toutes les 3 plateformes
         trackEvent('Lead', { currency: 'USD', value: 0 });
 
         this.style.display = 'none';
         document.getElementById('form-success').style.display = 'block';
+    });
+
+    /* ---- SPOTLIGHT CARDS — radial gradient qui suit le curseur ---- */
+    document.querySelectorAll('.step-card').forEach(function(card) {
+        var spotlight = card.querySelector('.step-spotlight');
+        card.addEventListener('mousemove', function(e) {
+            var rect = card.getBoundingClientRect();
+            var x = e.clientX - rect.left;
+            var y = e.clientY - rect.top;
+            spotlight.style.background =
+                'radial-gradient(circle 420px at ' + x + 'px ' + y + 'px, rgba(153,205,241,0.12) 0%, transparent 40%)';
+        });
     });
 
     // ── Navbar scroll-aware (intégrée hero → flottante) ──────────
