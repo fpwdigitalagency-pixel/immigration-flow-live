@@ -1650,11 +1650,16 @@
 
         // Webhook N8N — prod: https://flow.fpw.agency/webhook/5c34278d-d4ea-4c37-bf1a-7a242f7dabbd
         // test:         https://flow.fpw.agency/webhook-test/5c34278d-d4ea-4c37-bf1a-7a242f7dabbd
+        // no-cors + x-www-form-urlencoded : pas de preflight, passe Cloudflare directement vers N8N
+        // Dans N8N : champs disponibles sous $json.body.firstname, $json.body.whatsapp, etc.
+        var formPayload = new URLSearchParams();
+        Object.keys(data).forEach(function(k) { formPayload.append(k, data[k]); });
         fetch('https://flow.fpw.agency/webhook/5c34278d-d4ea-4c37-bf1a-7a242f7dabbd', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        }).catch(function(err) { console.error('Webhook error:', err); });
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: formPayload.toString()
+        });
 
         // Conversion principale — fired sur toutes les 3 plateformes
         trackEvent('Lead', { currency: 'USD', value: 0 });
