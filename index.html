@@ -1529,6 +1529,7 @@
         initialCountry: 'cd',
         preferredCountries: ['cd', 'ci', 'sn', 'cm', 'cg', 'ga', 'bj', 'ml', 'fr', 'be'],
         separateDialCode: true,
+        customPlaceholder: function(p) { return p.replace(/\D/g, ''); },
         utilsScript: 'https://cdn.jsdelivr.net/npm/intl-tel-input@23/build/js/utils.js'
     });
 
@@ -1646,7 +1647,7 @@
         const data = {
             firstname: document.getElementById('f-firstname').value,
             lastname:  document.getElementById('f-lastname').value,
-            whatsapp:  iti.getNumber(),
+            whatsapp:  iti.getNumber().replace(/^\+/, ''),
             agency:    document.getElementById('f-agency').value,
             active:    active.value,
             ts:        new Date().toISOString()
