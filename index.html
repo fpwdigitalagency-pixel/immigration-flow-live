@@ -1461,10 +1461,14 @@
 <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@23/build/js/intlTelInput.min.js"></script>
 <script>
     /* ---- ANALYTICS — Helper centralisé (GA4 + Meta Pixel + Clarity) ---- */
+    var META_STD = ['PageView','ViewContent','Search','AddToCart','AddToWishlist','InitiateCheckout','AddPaymentInfo','Purchase','Lead','CompleteRegistration','Contact','CustomizeProduct','Donate','FindLocation','Schedule','StartTrial','SubmitApplication','Subscribe'];
     function trackEvent(eventName, params) {
         params = params || {};
         if (typeof gtag !== 'undefined') gtag('event', eventName, params);
-        if (typeof fbq !== 'undefined') fbq('track', eventName, params);
+        if (typeof fbq !== 'undefined') {
+            if (META_STD.indexOf(eventName) !== -1) fbq('track', eventName, params);
+            else fbq('trackCustom', eventName, params);
+        }
         if (typeof clarity !== 'undefined') clarity('event', eventName);
     }
 
