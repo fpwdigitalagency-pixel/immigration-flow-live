@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil confirmé · Immigration Flow</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+    <link href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --surface-dim:               #0f141a;
+            --surface-container-low:     #181c23;
+            --surface-container:         #1c2027;
+            --surface-container-high:    #272b32;
+            --surface-container-highest: #31353c;
+            --outline-variant:           #41484d;
+            --primary:                   #e3f2ff;
+            --primary-container:         #a6daff;
+            --primary-fixed-dim:         #99cdf1;
+            --on-primary-fixed:          #001e2e;
+            --on-surface:                #dde4ec;
+            --on-surface-variant:        #8e97a3;
+            --font-serif: 'Instrument Serif', Georgia, serif;
+            --font-sans:  'Satoshi', system-ui, -apple-system, sans-serif;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: var(--surface-dim);
+            color: var(--on-surface);
+            font-family: var(--font-sans);
+            font-size: 1rem;
+            font-weight: 500;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            -webkit-font-smoothing: antialiased;
+            padding: 2rem 1.5rem;
+        }
+
+        .card {
+            width: min(100%, 560px);
+            background: var(--surface-container);
+            border-radius: 24px;
+            padding: clamp(2rem, 6vw, 3.5rem);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1.5rem;
+            animation: fadeUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) both;
+        }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--surface-container-high);
+            border-radius: 9999px;
+            padding: 0.35rem 1rem;
+        }
+        .badge-dot {
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: var(--primary-container);
+            box-shadow: 0 0 6px var(--primary-container);
+            animation: pulse 2s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(0.85); }
+        }
+        .badge-text {
+            font-size: 0.68rem;
+            font-weight: 600;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: var(--primary-fixed-dim);
+        }
+
+        .checkmark {
+            width: 56px; height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(166,218,255,0.15), rgba(153,205,241,0.08));
+            border: 1.5px solid rgba(166,218,255,0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+        }
+
+        h1 {
+            font-family: var(--font-serif);
+            font-style: italic;
+            font-size: clamp(1.7rem, 5vw, 2.4rem);
+            line-height: 1.1;
+            letter-spacing: -0.025em;
+            color: var(--primary);
+        }
+
+        .body-text {
+            font-size: 0.95rem;
+            font-weight: 400;
+            color: var(--on-surface-variant);
+            line-height: 1.7;
+        }
+        .body-text strong {
+            color: var(--on-surface);
+            font-weight: 600;
+        }
+
+        .divider {
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--outline-variant), transparent);
+        }
+
+        .next-step {
+            background: var(--surface-container-high);
+            border-radius: 14px;
+            padding: 1.25rem 1.5rem;
+            width: 100%;
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+        .next-step-icon {
+            flex-shrink: 0;
+            margin-top: 0.1rem;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--surface-container-highest);
+            border: 1px solid rgba(153,205,241,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            color: var(--primary-fixed-dim);
+        }
+        .next-step-content {}
+        .next-step-title {
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--primary-fixed-dim);
+            margin-bottom: 0.3rem;
+        }
+        .next-step-text {
+            font-size: 0.9rem;
+            color: var(--on-surface-variant);
+            line-height: 1.55;
+        }
+        .next-step-text strong { color: var(--on-surface); font-weight: 600; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+
+    <div class="badge">
+        <div class="badge-dot"></div>
+        <span class="badge-text">Profil confirmé</span>
+    </div>
+
+    <div class="checkmark">✓</div>
+
+    <h1>Votre profil correspond.</h1>
+
+    <p class="body-text">
+        C'est le type de profil qu'on cherche — une agence en activité, des clients réels,
+        une décision à prendre. <strong>On a noté votre dossier.</strong>
+    </p>
+
+    <div class="divider"></div>
+
+    <div class="next-step">
+        <div class="next-step-icon">01</div>
+        <div class="next-step-content">
+            <p class="next-step-title">Prochaine étape</p>
+            <p class="next-step-text">
+                Vous recevrez un lien WhatsApp pour réserver votre appel stratégique.
+                <strong>Restez disponible sur WhatsApp dans les prochaines heures.</strong>
+            </p>
+        </div>
+    </div>
+
+    <div class="next-step">
+        <div class="next-step-icon">02</div>
+        <div class="next-step-content">
+            <p class="next-step-title">Ce que vous aurez</p>
+            <p class="next-step-text">
+                30 minutes pour regarder votre situation actuelle et voir
+                ce qu'il faudrait mettre en place pour avoir des clients
+                qui viennent d'eux-mêmes, chaque semaine.
+            </p>
+        </div>
+    </div>
+
+</div>
+
+<!-- Meta Pixel -->
+<script data-cfasync="false">
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '1888896432004340');
+fbq('track', 'PageView');
+</script>
+
+</body>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appel confirmé · Immigration Flow</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+    <link href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --surface-dim:               #0f141a;
+            --surface-container:         #1c2027;
+            --surface-container-high:    #272b32;
+            --outline-variant:           #41484d;
+            --primary:                   #e3f2ff;
+            --primary-container:         #a6daff;
+            --primary-fixed-dim:         #99cdf1;
+            --on-primary-fixed:          #001e2e;
+            --on-surface:                #dde4ec;
+            --on-surface-variant:        #8e97a3;
+            --font-serif: 'Instrument Serif', Georgia, serif;
+            --font-sans:  'Satoshi', system-ui, -apple-system, sans-serif;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: var(--surface-dim);
+            color: var(--on-surface);
+            font-family: var(--font-sans);
+            font-size: 1rem;
+            font-weight: 500;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            -webkit-font-smoothing: antialiased;
+            padding: 2rem 1.5rem;
+        }
+        .card {
+            width: min(100%, 540px);
+            background: var(--surface-container);
+            border-radius: 24px;
+            padding: clamp(2.5rem, 7vw, 4rem);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+            text-align: center;
+            animation: fadeUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) both;
+        }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .icon {
+            width: 72px; height: 72px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(166,218,255,0.15), rgba(153,205,241,0.08));
+            border: 1.5px solid rgba(166,218,255,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+        h1 {
+            font-family: var(--font-serif);
+            font-style: italic;
+            font-size: clamp(1.8rem, 5vw, 2.5rem);
+            line-height: 1.1;
+            letter-spacing: -0.025em;
+            color: var(--primary);
+        }
+        .body-text {
+            font-size: 0.95rem;
+            font-weight: 400;
+            color: var(--on-surface-variant);
+            line-height: 1.7;
+            max-width: 380px;
+        }
+        .body-text strong { color: var(--on-surface); font-weight: 600; }
+        .divider {
+            width: 100%; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--outline-variant), transparent);
+        }
+        .checklist {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            text-align: left;
+            width: 100%;
+        }
+        .checklist li {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            font-size: 0.9rem;
+            color: var(--on-surface-variant);
+            line-height: 1.5;
+        }
+        .checklist li::before {
+            content: '→';
+            color: var(--primary-fixed-dim);
+            flex-shrink: 0;
+            font-weight: 700;
+        }
+        .checklist li strong { color: var(--on-surface); font-weight: 600; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="icon">✓</div>
+    <h1>Appel confirmé.</h1>
+    <p class="body-text">
+        Vous allez recevoir une confirmation sur WhatsApp.
+        Voici comment vous préparer pour tirer le maximum de cet appel.
+    </p>
+    <div class="divider"></div>
+    <ul class="checklist">
+        <li><strong>Notez vos chiffres actuels</strong> — combien de clients ce mois-ci, à quel ticket moyen</li>
+        <li><strong>Identifiez votre source principale</strong> — d'où viennent vos leads aujourd'hui</li>
+        <li><strong>Préparez une question précise</strong> — ce que vous voulez résoudre en priorité</li>
+    </ul>
+</div>
+
+<script data-cfasync="false">
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '1888896432004340');
+fbq('track', 'PageView');
+</script>
+
+</body>
+</html>

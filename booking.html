@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Réserver votre appel · Immigration Flow</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+    <link href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700&display=swap" rel="stylesheet">
+    <!-- Calendly inline widget -->
+    <link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet">
+    <style>
+        :root {
+            --surface-dim:               #0f141a;
+            --surface-container-low:     #181c23;
+            --surface-container:         #1c2027;
+            --surface-container-high:    #272b32;
+            --surface-container-highest: #31353c;
+            --outline-variant:           #41484d;
+            --primary:                   #e3f2ff;
+            --primary-container:         #a6daff;
+            --primary-fixed-dim:         #99cdf1;
+            --on-primary-fixed:          #001e2e;
+            --on-surface:                #dde4ec;
+            --on-surface-variant:        #8e97a3;
+            --font-serif: 'Instrument Serif', Georgia, serif;
+            --font-sans:  'Satoshi', system-ui, -apple-system, sans-serif;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: var(--surface-dim);
+            color: var(--on-surface);
+            font-family: var(--font-sans);
+            font-size: 1rem;
+            font-weight: 500;
+            line-height: 1.6;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            padding: 0 0 4rem;
+        }
+
+        /* ── Header ─────────────────────────────────────────── */
+        .b-header {
+            text-align: center;
+            padding: clamp(3rem, 8vw, 5rem) 1.5rem clamp(2rem, 4vw, 3rem);
+            max-width: 640px;
+            margin: 0 auto;
+        }
+        .b-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--surface-container);
+            border-radius: 9999px;
+            padding: 0.35rem 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .b-badge-dot {
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: var(--primary-container);
+            box-shadow: 0 0 6px var(--primary-container);
+            animation: pulse 2s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(0.85); }
+        }
+        .b-badge-text {
+            font-size: 0.68rem;
+            font-weight: 600;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: var(--primary-fixed-dim);
+        }
+        .b-title {
+            font-family: var(--font-serif);
+            font-style: italic;
+            font-size: clamp(2rem, 5.5vw, 3rem);
+            line-height: 1.1;
+            letter-spacing: -0.025em;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        .b-subtitle {
+            font-size: 0.95rem;
+            font-weight: 400;
+            color: var(--on-surface-variant);
+            line-height: 1.65;
+            max-width: 460px;
+            margin: 0 auto;
+        }
+        .b-subtitle strong { color: var(--on-surface); font-weight: 600; }
+
+        /* ── Calendly container ──────────────────────────────── */
+        .b-calendly-wrap {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* Override Calendly styles for dark theme */
+        .calendly-inline-widget {
+            border-radius: 20px;
+            overflow: hidden;
+            min-height: 700px;
+            background: var(--surface-container) !important;
+        }
+
+        /* ── Confirmation overlay (post-booking) ─────────────── */
+        .b-confirm {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 20, 26, 0.95);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        .b-confirm.visible { display: flex; }
+        .b-confirm-card {
+            background: var(--surface-container);
+            border-radius: 24px;
+            padding: clamp(2rem, 6vw, 3.5rem);
+            max-width: 480px;
+            width: 100%;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.25rem;
+            animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+        }
+        @keyframes popIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to   { opacity: 1; transform: scale(1); }
+        }
+        .b-confirm-icon {
+            width: 64px; height: 64px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(166,218,255,0.15), rgba(153,205,241,0.08));
+            border: 1.5px solid rgba(166,218,255,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+        }
+        .b-confirm-title {
+            font-family: var(--font-serif);
+            font-style: italic;
+            font-size: clamp(1.5rem, 4vw, 2rem);
+            line-height: 1.15;
+            letter-spacing: -0.02em;
+            color: var(--primary);
+        }
+        .b-confirm-text {
+            font-size: 0.9rem;
+            color: var(--on-surface-variant);
+            line-height: 1.65;
+        }
+        .b-confirm-text strong { color: var(--on-surface); font-weight: 600; }
+    </style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="b-header">
+    <div class="b-badge">
+        <div class="b-badge-dot"></div>
+        <span class="b-badge-text">Accès prioritaire</span>
+    </div>
+    <h1 class="b-title">Réservez votre appel stratégique</h1>
+    <p class="b-subtitle">
+        30 minutes pour analyser votre acquisition et voir si notre système
+        peut vous générer <strong>des rendez-vous qualifiés dans les 7 jours</strong>.
+    </p>
+</header>
+
+<!-- Calendly embed -->
+<div class="b-calendly-wrap">
+    <div class="calendly-inline-widget" id="calendly-container"
+         data-url="https://calendly.com/fpw-digital-agency/new-meeting"
+         style="min-width:320px;height:700px;">
+    </div>
+</div>
+
+<!-- Booking confirmation overlay -->
+<div class="b-confirm" id="b-confirm">
+    <div class="b-confirm-card">
+        <div class="b-confirm-icon">✓</div>
+        <h2 class="b-confirm-title">Appel confirmé.</h2>
+        <p class="b-confirm-text">
+            Vous allez recevoir un message WhatsApp de confirmation.
+            <strong>Préparez les chiffres de votre acquisition actuelle</strong>
+            — c'est ce qu'on analysera ensemble.
+        </p>
+    </div>
+</div>
+
+<!-- Calendly script -->
+<script src="https://assets.calendly.com/assets/external/widget.js" async></script>
+
+<!-- Meta Pixel -->
+<script data-cfasync="false">
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '1888896432004340');
+fbq('track', 'PageView');
+</script>
+
+<script>
+(function () {
+    'use strict';
+
+    // TODO : remplacer par l'URL du webhook n8n dédié booking (Workflow WD fallback)
+    // TODO : créer le Workflow WD dans n8n (trigger Calendly) et remplacer cette URL
+    // En attendant, pointe vers le même webhook — le workflow détectera les champs call_booked/call_status
+    var WEBHOOK_BOOKING = 'https://flow.fpw.agency/webhook/35e24c2f-9c08-4f95-85bc-14a52df84c87';
+
+    // Récupérer les données de la session
+    var urlParams = new URLSearchParams(window.location.search);
+    var whatsapp = urlParams.get('w') || sessionStorage.getItem('q_phone') || '';
+    var name = sessionStorage.getItem('q_name') || '';
+
+    // Pré-remplir Calendly dès que le widget est chargé
+    // Note : data-url sur le div suffit pour le pre-fill via les paramètres URL
+    // Pour un pre-fill plus propre avec JS on peut aussi utiliser Calendly.initInlineWidget
+    window.addEventListener('load', function () {
+        var container = document.getElementById('calendly-container');
+        if (!container) return;
+
+        // Construire l'URL Calendly avec pre-fill
+        var base = 'https://calendly.com/fpw-digital-agency/new-meeting';
+        var params = new URLSearchParams();
+        if (name) params.set('name', name);
+        // Note : Calendly ne supporte pas le pre-fill téléphone via URL mais
+        // les infos sont stockées dans Supabase via le whatsapp_number
+
+        container.setAttribute('data-url', base + '?' + params.toString());
+
+        // Initialiser si Calendly est déjà chargé
+        if (typeof Calendly !== 'undefined' && Calendly.initInlineWidget) {
+            container.removeAttribute('data-url');
+            Calendly.initInlineWidget({
+                url: base + (name ? '?name=' + encodeURIComponent(name) : ''),
+                parentElement: container
+            });
+        }
+    });
+
+    // Écouter l'événement de booking confirmé
+    window.addEventListener('message', function (e) {
+        if (!e.data || e.data.event !== 'calendly.event_scheduled') return;
+
+        var uid = (typeof crypto !== 'undefined' && crypto.randomUUID)
+            ? crypto.randomUUID()
+            : 'bc-' + Date.now() + '-' + Math.random().toString(36).slice(2);
+
+        // Pixel browser — BookCall
+        if (typeof fbq !== 'undefined') {
+            fbq('trackCustom', 'BookCall', { segment: 'A' }, { eventID: uid });
+        }
+
+        // GA4
+        if (typeof gtag !== 'undefined') {
+            gtag('event', 'BookCall', { segment: 'A', event_id: uid });
+        }
+
+        // Webhook n8n (fallback — le trigger Calendly natif dans n8n est le principal)
+        // Utilise les colonnes existantes : call_booked, call_status
+        if (whatsapp) {
+            var payload = new URLSearchParams();
+            payload.append('whatsapp_number', whatsapp);
+            payload.append('booking_event_id', uid);
+            payload.append('call_booked', 'TRUE');
+            payload.append('call_status', 'BOOKED');
+            fetch(WEBHOOK_BOOKING, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: payload.toString()
+            }).catch(function () {});
+        }
+
+        // Afficher l'overlay de confirmation
+        document.getElementById('b-confirm').classList.add('visible');
+
+        // Nettoyer sessionStorage (optionnel)
+        sessionStorage.removeItem('q_segment');
+    });
+
+}());
+</script>
+
+</body>
+</html>

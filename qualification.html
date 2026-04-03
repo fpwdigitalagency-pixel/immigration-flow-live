@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Votre profil · Immigration Flow</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+    <link href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --surface-dim:               #0f141a;
+            --surface-container-low:     #181c23;
+            --surface-container:         #1c2027;
+            --surface-container-high:    #272b32;
+            --surface-container-highest: #31353c;
+            --outline-variant:           #41484d;
+            --primary:                   #e3f2ff;
+            --primary-container:         #a6daff;
+            --primary-fixed-dim:         #99cdf1;
+            --on-primary-fixed:          #001e2e;
+            --surface-tint:              #99cdf1;
+            --on-surface:                #dde4ec;
+            --on-surface-variant:        #8e97a3;
+            --font-serif: 'Instrument Serif', Georgia, serif;
+            --font-sans:  'Satoshi', system-ui, -apple-system, sans-serif;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            background-color: var(--surface-dim);
+            color: var(--on-surface);
+            font-family: var(--font-sans);
+            font-size: 1rem;
+            font-weight: 500;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        /* ── Progress bar ─────────────────────────────────────── */
+        .q-progress-wrap {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: var(--surface-container);
+            z-index: 100;
+        }
+        .q-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-fixed-dim), var(--primary-container));
+            width: 0%;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* ── Logo / branding ──────────────────────────────────── */
+        .q-logo {
+            margin-top: 3.5rem;
+            margin-bottom: clamp(2rem, 5vw, 3.5rem);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .q-logo-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--surface-container);
+            border-radius: 9999px;
+            padding: 0.35rem 1rem;
+        }
+        .q-logo-dot {
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: var(--primary-container);
+            box-shadow: 0 0 6px var(--primary-container);
+        }
+        .q-logo-text {
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: var(--primary-fixed-dim);
+        }
+
+        /* ── Stage (question area) ────────────────────────────── */
+        .q-stage {
+            width: min(100%, 620px);
+            padding: 0 1.5rem;
+            position: relative;
+            min-height: 70vh;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+        }
+
+        /* ── Question card ────────────────────────────────────── */
+        .q-card {
+            width: 100%;
+            position: absolute;
+            top: 0;
+            opacity: 0;
+            transform: translateY(24px);
+            pointer-events: none;
+            transition: opacity 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+                        transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .q-card.active {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: all;
+            position: relative;
+        }
+        .q-card.exit {
+            opacity: 0;
+            transform: translateY(-24px);
+            pointer-events: none;
+        }
+
+        .q-step-label {
+            font-size: 0.68rem;
+            font-weight: 600;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: var(--primary-fixed-dim);
+            margin-bottom: 1rem;
+        }
+
+        .q-question {
+            font-family: var(--font-serif);
+            font-style: italic;
+            font-size: clamp(1.55rem, 4.5vw, 2.2rem);
+            line-height: 1.15;
+            letter-spacing: -0.02em;
+            color: var(--primary);
+            margin-bottom: clamp(1.5rem, 4vw, 2.5rem);
+        }
+
+        /* ── Choice options ───────────────────────────────────── */
+        .q-choices {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .q-choice {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: var(--surface-container);
+            border-radius: 14px;
+            padding: 1rem 1.25rem;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.15s ease;
+            border: 1px solid transparent;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+        .q-choice:hover {
+            background: var(--surface-container-high);
+            transform: translateY(-2px);
+        }
+        .q-choice.selected {
+            background: var(--surface-container-high);
+            border-color: var(--primary-container);
+        }
+
+        .q-choice-key {
+            flex-shrink: 0;
+            width: 28px; height: 28px;
+            border-radius: 8px;
+            background: var(--surface-container-highest);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--on-surface-variant);
+            letter-spacing: 0;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+        .q-choice.selected .q-choice-key {
+            background: var(--primary-container);
+            color: var(--on-primary-fixed);
+        }
+
+        .q-choice-label {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--on-surface);
+            line-height: 1.4;
+        }
+
+        /* ── Text input (for country) ─────────────────────────── */
+        .q-input-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+        .q-input {
+            width: 100%;
+            background: var(--surface-container);
+            border: none;
+            border-bottom: 2px solid var(--outline-variant);
+            border-radius: 12px 12px 0 0;
+            padding: 1rem 1.25rem;
+            font-family: var(--font-sans);
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--on-surface);
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+        .q-input::placeholder { color: var(--on-surface-variant); }
+        .q-input:focus { border-bottom-color: var(--primary-container); }
+
+        .q-btn {
+            align-self: flex-start;
+            background: var(--primary-container);
+            color: var(--on-primary-fixed);
+            border: none;
+            border-radius: 9999px;
+            padding: 0.85rem 2rem;
+            font-family: var(--font-sans);
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: opacity 0.2s ease, transform 0.15s ease;
+            letter-spacing: 0.01em;
+        }
+        .q-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+        .q-btn:active { transform: translateY(0); }
+
+        /* ── Calculating screen ───────────────────────────────── */
+        .q-calculating {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            padding: 4rem 1.5rem;
+            text-align: center;
+        }
+        .q-calculating.visible { display: flex; }
+
+        .q-spinner {
+            width: 44px; height: 44px;
+            border: 3px solid var(--surface-container-highest);
+            border-top-color: var(--primary-container);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .q-calc-text {
+            font-family: var(--font-serif);
+            font-style: italic;
+            font-size: 1.4rem;
+            color: var(--primary);
+        }
+
+        /* ── Footer step counter ──────────────────────────────── */
+        .q-footer {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        .q-dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--surface-container-highest);
+            transition: background 0.3s ease, width 0.3s ease;
+        }
+        .q-dot.active {
+            width: 18px;
+            border-radius: 3px;
+            background: var(--primary-container);
+        }
+        .q-dot.done {
+            background: var(--primary-fixed-dim);
+            opacity: 0.5;
+        }
+
+        @media (max-width: 480px) {
+            .q-stage { padding: 0 1rem; }
+            .q-question { font-size: 1.45rem; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Progress bar -->
+<div class="q-progress-wrap">
+    <div class="q-progress-fill" id="q-progress-fill"></div>
+</div>
+
+<!-- Logo -->
+<div class="q-logo">
+    <div class="q-logo-badge">
+        <div class="q-logo-dot"></div>
+        <span class="q-logo-text">Immigration Flow Live</span>
+    </div>
+</div>
+
+<!-- Stage -->
+<div class="q-stage" id="q-stage">
+
+    <!-- Q1 — Type d'activité -->
+    <div class="q-card active" data-step="0">
+        <p class="q-step-label">Question 1 sur 8</p>
+        <h2 class="q-question">Quel type d'activité dirigez-vous ?</h2>
+        <div class="q-choices" data-field="industry">
+            <div class="q-choice" data-value="travel">
+                <span class="q-choice-key">A</span>
+                <span class="q-choice-label">Agence de voyage</span>
+            </div>
+            <div class="q-choice" data-value="immigration">
+                <span class="q-choice-key">B</span>
+                <span class="q-choice-label">Agence d'immigration</span>
+            </div>
+            <div class="q-choice" data-value="other_service">
+                <span class="q-choice-key">C</span>
+                <span class="q-choice-label">Autre activité de service</span>
+            </div>
+            <div class="q-choice" data-value="other">
+                <span class="q-choice-key">D</span>
+                <span class="q-choice-label">Autre</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Q2 — Décisionnaire -->
+    <div class="q-card" data-step="1">
+        <p class="q-step-label">Question 2 sur 8</p>
+        <h2 class="q-question">Êtes-vous le propriétaire ou le principal décisionnaire ?</h2>
+        <div class="q-choices" data-field="decision_maker">
+            <div class="q-choice" data-value="yes">
+                <span class="q-choice-key">A</span>
+                <span class="q-choice-label">Oui, c'est moi qui décide</span>
+            </div>
+            <div class="q-choice" data-value="no">
+                <span class="q-choice-key">B</span>
+                <span class="q-choice-label">Non, je suis employé ou associé</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Q3 — Activité active -->
+    <div class="q-card" data-step="2">
+        <p class="q-step-label">Question 3 sur 8</p>
+        <h2 class="q-question">Votre activité est-elle réellement active aujourd'hui ?</h2>
+        <div class="q-choices" data-field="business_active">
+            <div class="q-choice" data-value="yes">
+                <span class="q-choice-key">A</span>
+                <span class="q-choice-label">Oui, j'ai des clients actifs</span>
+            </div>
+            <div class="q-choice" data-value="no">
+                <span class="q-choice-key">B</span>
+                <span class="q-choice-label">Non, je me lance ou je suis en pause</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Q4 — Volume clients -->
+    <div class="q-card" data-step="3">
+        <p class="q-step-label">Question 4 sur 8</p>
+        <h2 class="q-question">Combien de clients ou dossiers traitez-vous par mois ?</h2>
+        <div class="q-choices" data-field="monthly_clients">
+            <div class="q-choice" data-value="0-2">
+                <span class="q-choice-key">A</span>
+                <span class="q-choice-label">0 à 2 par mois</span>
+            </div>
+            <div class="q-choice" data-value="3-10">
+                <span class="q-choice-key">B</span>
+                <span class="q-choice-label">3 à 10 par mois</span>
+            </div>
+            <div class="q-choice" data-value="11-25">
+                <span class="q-choice-key">C</span>
+                <span class="q-choice-label">11 à 25 par mois</span>
+            </div>
+            <div class="q-choice" data-value="25+">
+                <span class="q-choice-key">D</span>
+                <span class="q-choice-label">Plus de 25 par mois</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Q5 — Ticket moyen -->
+    <div class="q-card" data-step="4">
+        <p class="q-step-label">Question 5 sur 8</p>
+        <h2 class="q-question">Quel est le minimum qu'un client vous paye ?</h2>
+        <div class="q-choices" data-field="ticket_band">
+            <div class="q-choice" data-value="lt500">
+                <span class="q-choice-key">A</span>
+                <span class="q-choice-label">Moins de 500 $</span>
+            </div>
+            <div class="q-choice" data-value="500-1000">
+                <span class="q-choice-key">B</span>
+                <span class="q-choice-label">500 à 1 000 $</span>
+            </div>
+            <div class="q-choice" data-value="1000-1500">
+                <span class="q-choice-key">C</span>
+                <span class="q-choice-label">1 000 à 1 500 $</span>
+            </div>
+            <div class="q-choice" data-value="1500-5000">
+                <span class="q-choice-key">D</span>
+                <span class="q-choice-label">1 500 à 5 000 $</span>
+            </div>
+            <div class="q-choice" data-value="5000+">
+                <span class="q-choice-key">E</span>
+                <span class="q-choice-label">5 000 $+</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Q6 — Pays (texte) -->
+    <div class="q-card" data-step="5">
+        <p class="q-step-label">Question 6 sur 8</p>
+        <h2 class="q-question">Dans quel pays êtes-vous basé ?</h2>
+        <div class="q-input-wrap">
+            <input class="q-input" id="q-country" type="text" placeholder="Ex : RDC, Côte d'Ivoire, Cameroun…" autocomplete="country" data-field="country">
+            <button class="q-btn" id="q-country-btn">Continuer →</button>
+        </div>
+    </div>
+
+    <!-- Q7 — Budget mensuel -->
+    <div class="q-card" data-step="6">
+        <p class="q-step-label">Question 7 sur 8</p>
+        <h2 class="q-question">Quel budget mensuel seriez-vous prêt à investir pour avoir plus de clients chaque mois ?</h2>
+        <div class="q-choices" data-field="investment_intent">
+            <div class="q-choice" data-value="500-1000">
+                <span class="q-choice-key">A</span>
+                <span class="q-choice-label">500 $ à 1 000 $ par mois</span>
+            </div>
+            <div class="q-choice" data-value="1000-2000">
+                <span class="q-choice-key">B</span>
+                <span class="q-choice-label">1 000 $ à 2 000 $ par mois</span>
+            </div>
+            <div class="q-choice" data-value="2000-5000">
+                <span class="q-choice-key">C</span>
+                <span class="q-choice-label">2 000 $ à 5 000 $ par mois</span>
+            </div>
+            <div class="q-choice" data-value="5000+">
+                <span class="q-choice-key">D</span>
+                <span class="q-choice-label">Plus de 5 000 $ par mois</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Q8 — Présence au live -->
+    <div class="q-card" data-step="7">
+        <p class="q-step-label">Question 8 sur 8</p>
+        <h2 class="q-question">Avez-vous assisté au live du 4 avril ?</h2>
+        <div class="q-choices" data-field="attended_live">
+            <div class="q-choice" data-value="yes">
+                <span class="q-choice-key">A</span>
+                <span class="q-choice-label">Oui, j'étais présent</span>
+            </div>
+            <div class="q-choice" data-value="no">
+                <span class="q-choice-key">B</span>
+                <span class="q-choice-label">Non, je n'ai pas pu être là</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Calculating screen -->
+    <div class="q-calculating" id="q-calculating">
+        <div class="q-spinner"></div>
+        <p class="q-calc-text">Analyse de votre profil…</p>
+    </div>
+
+</div>
+
+<!-- Dot navigation footer -->
+<div class="q-footer" id="q-footer">
+    <div class="q-dot active" data-dot="0"></div>
+    <div class="q-dot" data-dot="1"></div>
+    <div class="q-dot" data-dot="2"></div>
+    <div class="q-dot" data-dot="3"></div>
+    <div class="q-dot" data-dot="4"></div>
+    <div class="q-dot" data-dot="5"></div>
+    <div class="q-dot" data-dot="6"></div>
+    <div class="q-dot" data-dot="7"></div>
+</div>
+
+<script>
+(function () {
+    'use strict';
+
+    // ── Config ──────────────────────────────────────────────────────
+    // TODO : remplacer par l'URL du nouveau webhook n8n dédié à la qualification
+    var WEBHOOK_URL = 'https://flow.fpw.agency/webhook/35e24c2f-9c08-4f95-85bc-14a52df84c87';
+
+    // ── State ────────────────────────────────────────────────────────
+    var currentStep = 0;
+    var totalSteps = 8;
+    var answers = {};
+
+    // Récupérer le numéro WhatsApp depuis l'URL ou sessionStorage
+    var urlParams = new URLSearchParams(window.location.search);
+    var whatsapp = urlParams.get('w') || sessionStorage.getItem('q_phone') || '';
+    var firstname = sessionStorage.getItem('q_firstname') || '';
+
+    // Récupérer _fbc / _fbp depuis les cookies Meta Pixel
+    function getCookie(name) {
+        var cookie = document.cookie.split(';').map(function(c) { return c.trim(); })
+            .find(function(c) { return c.startsWith(name + '='); });
+        return cookie ? cookie.split('=').slice(1).join('=') : '';
+    }
+
+    // ── DOM refs ─────────────────────────────────────────────────────
+    var cards = document.querySelectorAll('.q-card[data-step]');
+    var progressFill = document.getElementById('q-progress-fill');
+    var dots = document.querySelectorAll('.q-dot[data-dot]');
+    var countryBtn = document.getElementById('q-country-btn');
+    var countryInput = document.getElementById('q-country');
+    var calculatingEl = document.getElementById('q-calculating');
+
+    // ── Progress helpers ─────────────────────────────────────────────
+    function updateProgress() {
+        var pct = Math.round((currentStep / totalSteps) * 100);
+        progressFill.style.width = pct + '%';
+        dots.forEach(function(dot, i) {
+            dot.classList.remove('active', 'done');
+            if (i === currentStep) dot.classList.add('active');
+            else if (i < currentStep) dot.classList.add('done');
+        });
+    }
+
+    // ── Show step ────────────────────────────────────────────────────
+    function showStep(step) {
+        // Hide current active card
+        cards.forEach(function(card) {
+            if (card.classList.contains('active')) {
+                card.classList.add('exit');
+                card.classList.remove('active');
+                setTimeout(function() { card.classList.remove('exit'); }, 450);
+            }
+        });
+
+        if (step >= totalSteps) {
+            // Show calculating screen
+            setTimeout(function() {
+                calculatingEl.classList.add('visible');
+                document.getElementById('q-footer').style.display = 'none';
+                calculateAndSubmit();
+            }, 100);
+            return;
+        }
+
+        // Show next card after short delay
+        setTimeout(function() {
+            var nextCard = document.querySelector('.q-card[data-step="' + step + '"]');
+            if (nextCard) {
+                nextCard.classList.add('active');
+                // Focus first choice or input
+                var firstChoice = nextCard.querySelector('.q-choice');
+                if (firstChoice) firstChoice.focus();
+                var inputEl = nextCard.querySelector('.q-input');
+                if (inputEl) inputEl.focus();
+            }
+            currentStep = step;
+            updateProgress();
+        }, 150);
+    }
+
+    // ── Choice click handler ─────────────────────────────────────────
+    document.querySelectorAll('.q-choices').forEach(function(group) {
+        group.addEventListener('click', function(e) {
+            var choice = e.target.closest('.q-choice');
+            if (!choice) return;
+
+            // Mark selected
+            group.querySelectorAll('.q-choice').forEach(function(c) { c.classList.remove('selected'); });
+            choice.classList.add('selected');
+
+            var field = group.getAttribute('data-field');
+            var value = choice.getAttribute('data-value');
+            answers[field] = value;
+
+            // Auto-advance after brief visual feedback
+            setTimeout(function() { showStep(currentStep + 1); }, 320);
+        });
+    });
+
+    // ── Country button ────────────────────────────────────────────────
+    countryBtn.addEventListener('click', function() {
+        var val = countryInput.value.trim();
+        if (!val) {
+            countryInput.focus();
+            countryInput.style.borderBottom = '2px solid #ff6b6b';
+            setTimeout(function() { countryInput.style.borderBottom = ''; }, 1500);
+            return;
+        }
+        answers.country = val;
+        showStep(currentStep + 1);
+    });
+
+    countryInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') countryBtn.click();
+    });
+
+    // ── Scoring ───────────────────────────────────────────────────────
+    function computeScore() {
+        var score = 0;
+        if (answers.decision_maker === 'yes') score++;
+        if (answers.business_active === 'yes') score++;
+        if (answers.industry === 'travel' || answers.industry === 'immigration') score++;
+        if (answers.ticket_band === '1000-1500' || answers.ticket_band === '1500-5000' || answers.ticket_band === '5000+') score++;
+        if (answers.monthly_clients === '3-10' || answers.monthly_clients === '11-25' || answers.monthly_clients === '25+') score++;
+        if (answers.investment_intent) score++;
+
+        // Règles éliminatoires pour Segment A
+        var isA = score >= 5
+            && answers.business_active === 'yes'
+            && answers.decision_maker === 'yes'
+            && answers.ticket_band !== 'lt500'
+            && answers.ticket_band !== '500-1000';
+
+        var segment;
+        if (isA) segment = 'A';
+        else if (score === 4) segment = 'B';
+        else if (score >= 2) segment = 'C';
+        else segment = 'D';
+
+        return { score: score, segment: segment };
+    }
+
+    // ── Submit & redirect ─────────────────────────────────────────────
+    function calculateAndSubmit() {
+        var result = computeScore();
+        var uid = (typeof crypto !== 'undefined' && crypto.randomUUID)
+            ? crypto.randomUUID()
+            : 'q-' + Date.now() + '-' + Math.random().toString(36).slice(2);
+
+        var payload = {
+            whatsapp_number: whatsapp,
+            full_name: sessionStorage.getItem('q_name') || '',
+            agency_name: sessionStorage.getItem('q_agency') || '',
+            industry: answers.industry || '',
+            decision_maker: answers.decision_maker || '',
+            business_active: answers.business_active || '',
+            monthly_clients: answers.monthly_clients || '',
+            ticket_band: answers.ticket_band || '',
+            country: answers.country || '',
+            investment_intent: answers.investment_intent || '',
+            attended_live: answers.attended_live || '',
+            score: result.score,
+            fit_segment: result.segment,
+            // Mettre à jour la colonne existante `qualified` pour Segment A
+            qualified: result.segment === 'A' ? 'TRUE' : null,
+            qualification_event_id: uid,
+            fbc: getCookie('_fbc'),
+            fbp: getCookie('_fbp')
+        };
+
+        // Stocker pour usage dans booking.html
+        sessionStorage.setItem('q_segment', result.segment);
+
+        // Envoyer à n8n (no-cors, best-effort)
+        var formPayload = new URLSearchParams();
+        Object.keys(payload).forEach(function(k) { formPayload.append(k, payload[k]); });
+        fetch(WEBHOOK_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: formPayload.toString()
+        }).catch(function() { /* silently fail — redirect happens regardless */ });
+
+        // Meta Pixel — QualifiedLead uniquement pour Segment A
+        if (result.segment === 'A' && typeof fbq !== 'undefined') {
+            fbq('trackCustom', 'QualifiedLead', { segment: 'A', score: result.score }, { eventID: uid });
+        }
+
+        // Rediriger après court délai (laisse le spinner visible 1.2s)
+        setTimeout(function() {
+            var routes = {
+                'A': 'qualification-prioritaire.html',
+                'B': 'qualification-secondaire.html',
+                'C': 'qualification-suivi.html',
+                'D': 'qualification-non-fit.html'
+            };
+            window.location.href = (routes[result.segment] || 'qualification-suivi.html')
+                + '?w=' + encodeURIComponent(whatsapp);
+        }, 1200);
+    }
+
+    // ── Init ──────────────────────────────────────────────────────────
+    updateProgress();
+
+}());
+</script>
+
+<!-- Meta Pixel (même ID que index.html, noindex donc pas de double compte) -->
+<script data-cfasync="false">
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '1888896432004340');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=1888896432004340&ev=PageView&noscript=1"/></noscript>
+
+</body>
+</html>

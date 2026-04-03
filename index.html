@@ -877,6 +877,15 @@
             text-transform: uppercase;
         }
 
+        /* Message bloquant WhatsApp requis */
+        .wa-required-msg {
+            font-size: 0.82rem;
+            font-weight: 400;
+            color: #f28b82;
+            line-height: 1.55;
+            margin-top: 0.6rem;
+        }
+
         /* Trust signals row */
         .form-trust-row {
             display: flex;
@@ -1341,11 +1350,29 @@
                     </div>
                 </div>
 
-                <!-- WhatsApp avec indicatif searchable -->
-                <div class="form-group">
+                <!-- Question WhatsApp -->
+                <div class="form-group" id="wa-question-group">
+                    <label class="form-label">Vous utilisez WhatsApp ?</label>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="has_whatsapp" value="yes">
+                            Oui
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="has_whatsapp" value="no">
+                            Non
+                        </label>
+                    </div>
+                    <p class="wa-required-msg" id="wa-required-msg" style="display:none">
+                        WhatsApp est indispensable — c'est par là qu'on vous envoie le lien d'accès et les rappels. Sans WhatsApp, vous ne pouvez pas réserver votre place.
+                    </p>
+                </div>
+
+                <!-- Numéro WhatsApp — affiché seulement si Oui -->
+                <div class="form-group" id="phone-group" style="display:none">
                     <label class="form-label" for="f-phone">Numéro WhatsApp *</label>
                     <div class="form-phone-wrapper">
-                        <input type="tel" id="f-phone" name="phone" class="form-phone-input" placeholder="812 345 678" autocomplete="tel" required>
+                        <input type="tel" id="f-phone" name="phone" class="form-phone-input" placeholder="812 345 678" autocomplete="tel">
                     </div>
                 </div>
 
@@ -1516,6 +1543,21 @@
         }, { once: false });
     });
 
+    /* ---- RADIO WHATSAPP — affichage conditionnel du champ téléphone ---- */
+    document.querySelectorAll('input[name="has_whatsapp"]').forEach(function(radio) {
+        radio.addEventListener('change', function() {
+            var phoneGroup = document.getElementById('phone-group');
+            var waMsg = document.getElementById('wa-required-msg');
+            if (this.value === 'yes') {
+                phoneGroup.style.display = '';
+                waMsg.style.display = 'none';
+            } else {
+                phoneGroup.style.display = 'none';
+                waMsg.style.display = '';
+            }
+        });
+    });
+
     /* ---- RADIO QUALIFICATION ---- */
     document.querySelectorAll('input[name="active"]').forEach(function(radio) {
         radio.addEventListener('change', function() {
@@ -1644,6 +1686,13 @@
             return;
         }
 
+        const hasWA = document.querySelector('input[name="has_whatsapp"]:checked');
+        if (!hasWA || hasWA.value !== 'yes') {
+            document.getElementById('wa-required-msg').style.display = '';
+            document.getElementById('wa-question-group').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
+        }
+
         if (!iti.isValidNumber()) {
             const phoneInput = document.getElementById('f-phone');
             phoneInput.focus();
@@ -1661,24 +1710,17 @@
             ts:        new Date().toISOString()
         };
 
-        // Webhook N8N — prod: https://flow.fpw.agency/webhook/54a76505-db15-47b3-8244-2f2a0ae1be07
-        // test:         https://flow.fpw.agency/webhook-test/54a76505-db15-47b3-8244-2f2a0ae1be07
-        // no-cors + x-www-form-urlencoded : pas de preflight, passe Cloudflare directement vers N8N
-        // Dans N8N : champs disponibles sous $json.body.firstname, $json.body.whatsapp, etc.
-        var formPayload = new URLSearchParams();
-        Object.keys(data).forEach(function(k) { formPayload.append(k, data[k]); });
-        fetch('https://flow.fpw.agency/webhook/54a76505-db15-47b3-8244-2f2a0ae1be07', {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: formPayload.toString()
-        });
-
         // Conversion principale — fired sur toutes les 3 plateformes
         trackEvent('Lead', { currency: 'USD', value: 0 });
 
-        this.style.display = 'none';
-        document.getElementById('form-success').style.display = 'block';
+        // Stocker données pour pré-remplir qualification.html et booking.html
+        sessionStorage.setItem('q_firstname', data.firstname);
+        sessionStorage.setItem('q_name', data.firstname + ' ' + data.lastname);
+        sessionStorage.setItem('q_phone', data.whatsapp);
+        sessionStorage.setItem('q_agency', data.agency);
+
+        // Rediriger vers le formulaire de qualification (une question à la fois)
+        window.location.href = 'qualification.html?w=' + encodeURIComponent(data.whatsapp);
     });
 
     /* ---- SPOTLIGHT CARDS — radial gradient qui suit le curseur ---- */
