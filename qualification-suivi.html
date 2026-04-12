@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>À bientôt · Immigration Flow</title>
+    <title>Candidature reçue · FPW Digital Agency</title>
     <meta name="robots" content="noindex, nofollow">
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -85,33 +85,55 @@
         .info-text {
             font-size: 0.9rem; color: var(--on-surface-variant); line-height: 1.55;
         }
+        .signature {
+            font-size: 0.88rem;
+            color: var(--on-surface-variant);
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
 <div class="card">
     <div class="badge">
-        <span class="badge-text">Profil noté</span>
+        <span class="badge-text">Candidature reçue</span>
     </div>
 
-    <h1>Vous n'êtes pas encore là,<br>mais c'est une question de temps.</h1>
+    <h1 id="headline">Ta candidature est reçue.</h1>
+
+    <p class="body-text" id="intro-text">
+        J'ai lu tes réponses.
+    </p>
 
     <p class="body-text">
-        Votre profil montre une vraie intention, mais votre activité n'est peut-être
-        pas encore au niveau où notre système vous donnerait le maximum de résultats.
-        <strong>Nous gardons votre dossier</strong> et reviendrons vers vous au bon moment.
+        D'après tes réponses, ton agence est sur la bonne voie mais pas encore au stade où mon offre est la plus adaptée pour toi.
+        Les 3 places gratuites sont conçues pour des agences déjà en croissance active, avec un historique et un volume qui permettent de générer des résultats rapides.
     </p>
 
     <div class="divider"></div>
 
     <div class="info-block">
         <p class="info-text">
-            Concentrez-vous sur vos premiers clients actifs.
-            Quand vous serez prêt à scaler, nous serons là.
-            Regardez pour l'instant le replay du live — il y a des insights utiles
-            peu importe où vous en êtes.
+            Je garde tes coordonnées. Dans les prochaines semaines, je prépare des ressources et offres pour les agences à ton stade.
+            Dès qu'elles sont prêtes, tu seras parmi les premiers informés.
         </p>
     </div>
+
+    <p class="body-text">
+        Continue à signer des dossiers. Chaque dossier que tu signes aujourd'hui te rapproche du moment où on travaillera ensemble.
+    </p>
+
+    <p class="signature">— Aaron, FPW Digital Agency</p>
 </div>
+
+<script data-cfasync="false">
+(function() {
+    var firstname = sessionStorage.getItem('q_firstname') || '';
+    if (firstname) {
+        document.getElementById('headline').textContent = 'Ta candidature est reçue, ' + firstname + '.';
+        document.getElementById('intro-text').textContent = 'J\'ai lu tes réponses, ' + firstname + '.';
+    }
+}());
+</script>
 
 <script data-cfasync="false">
 !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?

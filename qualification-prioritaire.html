@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profil confirmé · Immigration Flow</title>
+    <title>Profil retenu · FPW Digital Agency</title>
     <meta name="robots" content="noindex, nofollow">
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
     <link href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700&display=swap" rel="stylesheet">
+    <link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet">
     <style>
         :root {
             --surface-dim:               #0f141a;
@@ -37,14 +38,15 @@
             line-height: 1.6;
             min-height: 100vh;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
             -webkit-font-smoothing: antialiased;
-            padding: 2rem 1.5rem;
+            padding: 3rem 1.5rem 4rem;
         }
 
         .card {
-            width: min(100%, 560px);
+            width: min(100%, 580px);
             background: var(--surface-container);
             border-radius: 24px;
             padding: clamp(2rem, 6vw, 3.5rem);
@@ -53,6 +55,7 @@
             align-items: flex-start;
             gap: 1.5rem;
             animation: fadeUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) both;
+            margin-bottom: 2.5rem;
         }
         @keyframes fadeUp {
             from { opacity: 0; transform: translateY(20px); }
@@ -86,17 +89,6 @@
             color: var(--primary-fixed-dim);
         }
 
-        .checkmark {
-            width: 56px; height: 56px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, rgba(166,218,255,0.15), rgba(153,205,241,0.08));
-            border: 1.5px solid rgba(166,218,255,0.25);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.6rem;
-        }
-
         h1 {
             font-family: var(--font-serif);
             font-style: italic;
@@ -123,94 +115,196 @@
             background: linear-gradient(90deg, transparent, var(--outline-variant), transparent);
         }
 
-        .next-step {
+        .info-block {
             background: var(--surface-container-high);
             border-radius: 14px;
-            padding: 1.25rem 1.5rem;
+            padding: 1.1rem 1.4rem;
             width: 100%;
-            display: flex;
-            gap: 1rem;
-            align-items: flex-start;
         }
-        .next-step-icon {
-            flex-shrink: 0;
-            margin-top: 0.1rem;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: var(--surface-container-highest);
-            border: 1px solid rgba(153,205,241,0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.72rem;
+        .info-label {
+            font-size: 0.68rem;
             font-weight: 700;
-            letter-spacing: 0.05em;
-            color: var(--primary-fixed-dim);
-        }
-        .next-step-content {}
-        .next-step-title {
-            font-size: 0.78rem;
-            font-weight: 700;
-            letter-spacing: 0.1em;
+            letter-spacing: 0.14em;
             text-transform: uppercase;
             color: var(--primary-fixed-dim);
-            margin-bottom: 0.3rem;
+            margin-bottom: 0.35rem;
         }
-        .next-step-text {
+        .info-text {
             font-size: 0.9rem;
             color: var(--on-surface-variant);
             line-height: 1.55;
         }
-        .next-step-text strong { color: var(--on-surface); font-weight: 600; }
+
+        /* Calendly widget */
+        .calendly-wrap {
+            width: min(100%, 580px);
+            animation: fadeUp 0.6s 0.2s cubic-bezier(0.4, 0, 0.2, 1) both;
+        }
+        .calendly-inline-widget {
+            border-radius: 20px;
+            overflow: hidden;
+            min-height: 700px;
+        }
+
+        /* Overlay confirmation booking */
+        .b-confirm {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15,20,26,0.85);
+            backdrop-filter: blur(8px);
+            z-index: 500;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        .b-confirm.visible { display: flex; }
+        .b-confirm-card {
+            background: var(--surface-container);
+            border-radius: 24px;
+            padding: 2.5rem 2rem;
+            width: min(100%, 420px);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            align-items: center;
+            animation: fadeUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) both;
+        }
+        .b-confirm-icon {
+            width: 56px; height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(166,218,255,0.15), rgba(153,205,241,0.08));
+            border: 1.5px solid rgba(166,218,255,0.25);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.6rem;
+        }
+        .b-confirm-title {
+            font-family: var(--font-serif);
+            font-style: italic;
+            font-size: 1.5rem;
+            color: var(--primary);
+            letter-spacing: -0.02em;
+        }
+        .b-confirm-text {
+            font-size: 0.9rem;
+            color: var(--on-surface-variant);
+            line-height: 1.6;
+        }
     </style>
 </head>
 <body>
 
 <div class="card">
-
     <div class="badge">
         <div class="badge-dot"></div>
-        <span class="badge-text">Profil confirmé</span>
+        <span class="badge-text">Profil retenu</span>
     </div>
 
-    <div class="checkmark">✓</div>
+    <h1 id="headline">Ton profil est dans la sélection.</h1>
 
-    <h1>Votre profil correspond.</h1>
-
-    <p class="body-text">
-        C'est le type de profil qu'on cherche — une agence en activité, des clients réels,
-        une décision à prendre. <strong>On a noté votre dossier.</strong>
+    <p class="body-text" id="intro-text">
+        J'ai lu tes réponses. Ton agence tient la route.
     </p>
 
     <div class="divider"></div>
 
-    <div class="next-step">
-        <div class="next-step-icon">01</div>
-        <div class="next-step-content">
-            <p class="next-step-title">Prochaine étape</p>
-            <p class="next-step-text">
-                Vous recevrez un lien WhatsApp pour réserver votre appel stratégique.
-                <strong>Restez disponible sur WhatsApp dans les prochaines heures.</strong>
-            </p>
-        </div>
+    <div class="info-block">
+        <p class="info-label">Ce qu'on fait maintenant</p>
+        <p class="info-text">
+            Tu me réserves <strong>30 minutes cette semaine.</strong>
+            On regarde ton business, je te dis ce que je peux faire pour toi concrètement.
+            C'est là que je décide si tu es dans les 3.
+        </p>
     </div>
 
-    <div class="next-step">
-        <div class="next-step-icon">02</div>
-        <div class="next-step-content">
-            <p class="next-step-title">Ce que vous aurez</p>
-            <p class="next-step-text">
-                30 minutes pour regarder votre situation actuelle et voir
-                ce qu'il faudrait mettre en place pour avoir des clients
-                qui viennent d'eux-mêmes, chaque semaine.
-            </p>
-        </div>
-    </div>
-
+    <p class="body-text">
+        Le créneau est en dessous. <strong>Prends-le avant les autres.</strong>
+    </p>
 </div>
 
-<!-- Meta Pixel -->
+<div class="calendly-wrap">
+    <div class="calendly-inline-widget" id="calendly-container"
+         style="min-width:320px;height:700px;"></div>
+</div>
+
+<!-- Overlay confirmation -->
+<div class="b-confirm" id="b-confirm">
+    <div class="b-confirm-card">
+        <div class="b-confirm-icon">✓</div>
+        <p class="b-confirm-title">Appel confirmé.</p>
+        <p class="b-confirm-text">
+            Ton créneau est réservé. Tu vas recevoir une confirmation par email.<br>
+            À très vite.
+        </p>
+    </div>
+</div>
+
+<script src="https://assets.calendly.com/assets/external/widget.js" async></script>
+<script data-cfasync="false">
+(function() {
+    var urlParams  = new URLSearchParams(window.location.search);
+    var whatsapp   = urlParams.get('w') || sessionStorage.getItem('q_phone') || '';
+    var segment    = urlParams.get('seg') || sessionStorage.getItem('q_segment') || '';
+    var name       = sessionStorage.getItem('q_name') || '';
+    var firstname  = sessionStorage.getItem('q_firstname') || '';
+
+    // Personnaliser le titre avec le prénom
+    if (firstname) {
+        document.getElementById('headline').textContent = firstname + ', ton profil est dans la sélection.';
+    }
+
+    // Init Calendly une fois le widget chargé
+    function initCal() {
+        if (typeof Calendly === 'undefined') {
+            setTimeout(initCal, 200);
+            return;
+        }
+        var calUrl = 'https://calendly.com/fpw-digital-agency/new-meeting';
+        if (name) calUrl += '?name=' + encodeURIComponent(name);
+        Calendly.initInlineWidget({
+            url: calUrl,
+            parentElement: document.getElementById('calendly-container')
+        });
+    }
+    initCal();
+
+    // Détecter la confirmation du booking
+    window.addEventListener('message', function(e) {
+        if (e.data && e.data.event === 'calendly.event_scheduled') {
+            document.getElementById('b-confirm').classList.add('visible');
+
+            // Analytics
+            var uid = (typeof crypto !== 'undefined' && crypto.randomUUID)
+                ? crypto.randomUUID()
+                : 'bk-' + Date.now();
+
+            if (typeof fbq !== 'undefined') {
+                fbq('trackCustom', 'BookCall', { segment: segment }, { eventID: uid });
+            }
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'BookCall', { segment: segment, event_id: uid });
+            }
+
+            // Webhook booking
+            try {
+                var form = new FormData();
+                form.append('whatsapp_number', whatsapp);
+                form.append('booking_event_id', uid);
+                form.append('call_booked', 'TRUE');
+                form.append('call_status', 'BOOKED');
+                form.append('segment', segment);
+                fetch('https://flow.fpw.agency/webhook/35e24c2f-9c08-4f95-85bc-14a52df84c87', {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    body: form
+                });
+            } catch(err) {}
+        }
+    });
+}());
+</script>
+
 <script data-cfasync="false">
 !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
 n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;

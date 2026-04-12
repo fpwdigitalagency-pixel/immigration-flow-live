@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Merci · Immigration Flow</title>
+    <title>Merci · FPW Digital Agency</title>
     <meta name="robots" content="noindex, nofollow">
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -40,14 +40,14 @@
             padding: 2rem 1.5rem;
         }
         .card {
-            width: min(100%, 560px);
+            width: min(100%, 520px);
             background: var(--surface-container);
             border-radius: 24px;
             padding: clamp(2rem, 6vw, 3.5rem);
             display: flex;
             flex-direction: column;
             align-items: flex-start;
-            gap: 1.5rem;
+            gap: 1.25rem;
             animation: fadeUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) both;
         }
         @keyframes fadeUp {
@@ -63,23 +63,51 @@
             font-size: 0.95rem; font-weight: 400;
             color: var(--on-surface-variant); line-height: 1.7;
         }
+        .signature {
+            font-size: 0.88rem;
+            color: var(--on-surface-variant);
+            font-style: italic;
+            margin-top: 0.25rem;
+        }
     </style>
 </head>
 <body>
 <div class="card">
-    <h1>Ce n'est pas le bon moment.</h1>
 
-    <p class="body-text">
-        Notre offre s'adresse spécifiquement aux propriétaires d'agences actives
-        avec un volume de clientèle établi. Ce n'est pas votre situation aujourd'hui —
-        et c'est tout à fait correct.
-    </p>
+    <!-- Variant A : pas WhatsApp (défaut) -->
+    <div id="variant-whatsapp">
+        <h1>Ce programme passe par WhatsApp.</h1>
+        <p class="body-text" style="margin-top: 1.25rem;">
+            L'ensemble de ma communication passe par WhatsApp. Comme tu ne l'utilises pas, je ne peux pas te suivre correctement dans cette opération. Ce n'est pas la bonne offre pour toi.
+        </p>
+        <p class="body-text">Bonne continuation dans tes projets.</p>
+        <p class="signature">— Aaron, FPW Digital Agency</p>
+    </div>
 
-    <p class="body-text">
-        Merci d'avoir assisté au live. Quand votre activité sera à un stade
-        où vous avez besoin de scaler votre acquisition, revenez nous voir.
-    </p>
+    <!-- Variant B : pas propriétaire -->
+    <div id="variant-proprietaire" style="display:none;">
+        <h1>Ce programme est pour les propriétaires actifs.</h1>
+        <p class="body-text" style="margin-top: 1.25rem;">
+            Cette opération est pour les propriétaires d'agences de voyage et d'immigration actives. Ce n'est pas ton cas aujourd'hui.
+        </p>
+        <p class="body-text">
+            Si tu veux te lancer dans ce secteur, tu peux me suivre sur Facebook. Je partage régulièrement du contenu utile pour les entrepreneurs du domaine.
+        </p>
+        <p class="body-text">Bonne continuation dans tes projets.</p>
+        <p class="signature">— Aaron, FPW Digital Agency</p>
+    </div>
+
 </div>
+
+<script data-cfasync="false">
+(function() {
+    var reason = new URLSearchParams(window.location.search).get('reason') || '';
+    if (reason === 'pas_proprietaire') {
+        document.getElementById('variant-whatsapp').style.display    = 'none';
+        document.getElementById('variant-proprietaire').style.display = '';
+    }
+}());
+</script>
 
 <script data-cfasync="false">
 !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
